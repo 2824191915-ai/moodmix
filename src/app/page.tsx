@@ -29,7 +29,9 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import BartenderStudio from "@/components/BartenderStudio";
 import CocktailLibrary from "@/components/CocktailLibrary";
+import { barTextZh, cocktailNameZh, moodColorLabels, strengthZh, themeLabels } from "@/lib/bar-localization";
 import { chooseTheme, questions, themes, type ThemeId } from "@/lib/moodmix";
+import { getProfessionalSpec } from "@/lib/professional-specs";
 import { useMoodMix } from "@/store/useMoodMix";
 
 const iconMap = {
@@ -71,7 +73,7 @@ function Brand() {
   return (
     <button className="brand" onClick={() => useMoodMix.getState().reset()} aria-label="返回 MoodMix 首页">
       <span className="brand-mark"><i>M</i></span>
-      <span className="brand-word">MoodMix<small>PARIS · SHANGHAI</small></span>
+      <span className="brand-word">MoodMix<small>巴黎 · 上海</small></span>
     </button>
   );
 }
@@ -85,7 +87,7 @@ function Shell({ children, themeId }: { children: React.ReactNode; themeId: Them
       <div className="shell-rule shell-rule-right" aria-hidden="true" />
       <header className="topbar">
         <Brand />
-        <div className="topbar-meta"><span>PRIVATE EDITION</span><i />A COCKTAIL RITUAL FOR THE NIGHT<i /><span>MM · 04</span></div>
+        <div className="topbar-meta"><span>私享夜间版</span><i />为今夜调制的情绪仪式<i /><span>第 04 夜</span></div>
         <button className="icon-button" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "关闭菜单" : "打开菜单"} title={menuOpen ? "关闭菜单" : "菜单"}>
           {menuOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
@@ -93,9 +95,9 @@ function Shell({ children, themeId }: { children: React.ReactNode; themeId: Them
       <AnimatePresence>
         {menuOpen && (
           <motion.div className="menu-panel" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-            <span>TONIGHT&apos;S RITUAL</span>
+            <span>今夜仪式</span>
             <button onClick={() => useMoodMix.getState().reset()}>重新开始</button>
-            <button disabled>Two Souls · Soon</button>
+            <button disabled>双人灵魂测试 · 即将开启</button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -112,26 +114,26 @@ function Welcome() {
         <div className="welcome-image" aria-hidden="true" />
         <div className="welcome-shade" aria-hidden="true" />
         <motion.div className="welcome-content" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
-          <div className="welcome-prelude"><p className="kicker">MOOD · SYMBOL · CLASSIC</p><span>RITUAL NO. 004</span></div>
-          <h1>MoodMix</h1>
-          <div className="welcome-signature"><span>A cocktail portrait</span><i /> <span>composed for tonight</span></div>
+          <div className="welcome-prelude"><p className="kicker">情绪 · 象征 · 经典酒谱</p><span>第 004 号夜间仪式</span></div>
+          <h1>MoodMix<small>今夜情绪调酒</small></h1>
+          <div className="welcome-signature"><span>一幅可饮用的情绪肖像</span><i /> <span>仅为今晚调制</span></div>
           <p className="welcome-copy">用八个瞬间，读出今晚的情绪、人格与一杯真正可被调出的酒。</p>
           <div className="welcome-actions">
             <button className="primary-action" onClick={start}>
-              Create your night <ArrowRight size={17} />
+              开启今夜配方 <ArrowRight size={17} />
             </button>
             <label className="mbti-select">
-              <span>MBTI · OPTIONAL</span>
+              <span>MBTI · 选填</span>
               <select value={mbti} onChange={(event) => setMbti(event.target.value)} aria-label="可选 MBTI 类型">
-                <option value="">Skip for now</option>
+                <option value="">暂时略过</option>
                 {mbtiTypes.map((type) => <option key={type}>{type}</option>)}
               </select>
             </label>
           </div>
         </motion.div>
-        <div className="welcome-edition"><EditionSeal /><span>THE NIGHT<br />DISTILLED</span></div>
+        <div className="welcome-edition"><EditionSeal /><span>萃取<br />今夜</span></div>
         <div className="welcome-foot">
-          <span>08 QUESTIONS</span><span>01 PORTRAIT</span><span className="welcome-foot-line" /><span>YOUR NIGHT, DISTILLED</span>
+          <span>08 道夜间提问</span><span>01 幅情绪肖像</span><span className="welcome-foot-line" /><span>把今夜，调成一杯酒</span>
         </div>
       </section>
     </Shell>
@@ -149,7 +151,7 @@ function Quiz() {
       <section className="quiz-shell">
         <aside className="quiz-aside">
           <div className="quiz-aside-head">
-            <span>{question.chapter === "atmosphere" ? "CREATE YOUR NIGHT" : "MOOD READING"}</span>
+            <span>{question.chapter === "atmosphere" ? "调制你的今夜" : "读取情绪暗纹"}</span>
             <EditionSeal compact />
           </div>
           <strong>{String(currentQuestion + 1).padStart(2, "0")}</strong>
@@ -200,16 +202,16 @@ function Coffee() {
             <span className="coffee-handle" />
             <div className="coffee-liquid"><i /><i /><i /><i /><i /><i /></div>
           </div>
-          <span className="coffee-plate-mark">MOODMIX · SYMBOL READING · 004</span>
+          <span className="coffee-plate-mark">MOODMIX · 咖啡象征解读 · 004</span>
         </div>
         <div className="coffee-copy">
-          <p className="kicker">COFFEE SYMBOL ENGINE</p>
-          <span className="coffee-folio">III SIGNS / I NIGHT</span>
+          <p className="kicker">咖啡杯底象征解读</p>
+          <span className="coffee-folio">三枚征兆 / 一夜答案</span>
           <h2>{ready ? "杯底已经安静下来" : "让未说出口的部分慢慢沉淀"}</h2>
           <p>{ready ? "三个象征正在等待被看见。" : "咖啡渣会在旋转之后留下今晚的线索。"}</p>
-          <div className="coffee-status"><i className={enhancementStatus === "loading" ? "is-pulsing" : ""} />{enhancementStatus === "loading" ? "THE PORTRAIT IS FORMING" : "THE PORTRAIT IS READY"}</div>
+          <div className="coffee-status"><i className={enhancementStatus === "loading" ? "is-pulsing" : ""} />{enhancementStatus === "loading" ? "正在读取你的情绪风味" : "今夜肖像已经显影"}</div>
           <button className="primary-action" onClick={reveal} disabled={!ready}>
-            <Sparkles size={17} /> Reveal my symbols
+            <Sparkles size={17} /> 揭晓杯底征兆
           </button>
         </div>
       </section>
@@ -228,6 +230,7 @@ function Portrait() {
   const theme = result ? themes[result.theme] : themes.golden;
   const symbolIcons = useMemo(() => result?.coffeeSymbols.map((symbol) => iconMap[symbol[0] as keyof typeof iconMap] ?? Star), [result]);
   if (!result) return null;
+  const recipeSpec = getProfessionalSpec(result.cocktail.basedOn);
 
   const downloadPoster = async () => {
     setPosterBusy(true);
@@ -264,21 +267,21 @@ function Portrait() {
     ctx.strokeRect(126, 126, 828, 1668);
     ctx.fillStyle = "#f4f0e8";
     ctx.font = "30px Arial";
-    ctx.fillText("MOODMIX  ·  PRIVATE NIGHT EDITION", 156, 202);
+    ctx.fillText("MOODMIX  ·  私享夜间版", 156, 202);
     ctx.font = "94px Didot, Georgia";
-    ctx.fillText(result.archetype.name, 156, 470);
+    ctx.fillText(result.archetype.cn, 156, 470);
     ctx.font = "48px sans-serif";
     ctx.fillStyle = theme.color;
-    ctx.fillText(result.archetype.cn, 156, 548);
+    ctx.fillText("今夜人格肖像", 156, 548);
     ctx.font = "34px sans-serif";
     ctx.fillStyle = "#b8b4ad";
-    ctx.fillText(`${theme.name}  /  ${theme.moodColor}`, 156, 680);
+    ctx.fillText(`${themeLabels[theme.name] ?? theme.name}  /  ${moodColorLabels[theme.moodColor] ?? theme.moodColor}`, 156, 680);
     ctx.font = "84px Didot, Georgia";
     ctx.fillStyle = "#f4f0e8";
     ctx.fillText(result.cocktail.name, 156, 1050);
     ctx.font = "30px sans-serif";
     ctx.fillStyle = theme.color;
-    ctx.fillText(`BASED ON  ${result.cocktail.basedOn.toUpperCase()}`, 156, 1122);
+    ctx.fillText(`经典骨架  ${cocktailNameZh(result.cocktail.basedOn)}`, 156, 1122);
     ctx.font = "34px Georgia";
     ctx.fillStyle = "#d6d1c7";
     const quote = result.message;
@@ -286,9 +289,9 @@ function Portrait() {
     lines.filter(Boolean).forEach((line, index) => ctx.fillText(line, 156, 1370 + index * 58));
     ctx.font = "28px sans-serif";
     ctx.fillStyle = "#8e8a83";
-    ctx.fillText(result.coffeeSymbols.map((symbol) => symbol[0].toUpperCase()).join("  ·  "), 156, 1700);
+    ctx.fillText(result.coffeeSymbols.map((symbol) => symbol[1]).join("  ·  "), 156, 1700);
     ctx.font = "22px Arial";
-    ctx.fillText("MM 04  /  YOUR NIGHT, DISTILLED", 156, 1780);
+    ctx.fillText("MM 04  /  把今夜，调成一杯酒", 156, 1780);
     const link = document.createElement("a");
     link.download = `MoodMix-${result.archetype.name.replaceAll(" ", "-")}.png`;
     link.href = canvas.toDataURL("image/png");
@@ -297,9 +300,9 @@ function Portrait() {
   };
 
   const shareResult = async () => {
-    const text = `Tonight I am ${result.archetype.name}. My MoodMix cocktail is ${result.cocktail.name}, based on ${result.cocktail.basedOn}.`;
+    const text = `今夜，我是${result.archetype.cn}。MoodMix 为我调制了「${result.cocktail.name}」，以${cocktailNameZh(result.cocktail.basedOn)}为经典骨架。`;
     try {
-      if (navigator.share) await navigator.share({ title: "My MoodMix Portrait", text });
+      if (navigator.share) await navigator.share({ title: "我的 MoodMix 今夜肖像", text });
       else await navigator.clipboard.writeText(text);
       setShared(true);
     } catch {
@@ -310,35 +313,35 @@ function Portrait() {
   return (
     <Shell themeId={result.theme}>
       <section className="portrait-wrap">
-        <div className="portrait-masthead"><span>MOODMIX PRIVATE EDITION</span><i /><span>PORTRAIT {String((result.seed % 16) + 1).padStart(2, "0")} / 16</span></div>
+        <div className="portrait-masthead"><span>MOODMIX 私享夜间版</span><i /><span>肖像 {String((result.seed % 16) + 1).padStart(2, "0")} / 16</span></div>
         <motion.div className="portrait-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <div className="portrait-number">{String((result.seed % 16) + 1).padStart(2, "0")}</div>
-          <p className="kicker">TONIGHT&apos;S PORTRAIT</p>
-          <h1>{result.archetype.name}</h1>
-          <h2>{result.archetype.cn}</h2>
+          <p className="kicker">你的今夜人格肖像</p>
+          <h1>{result.archetype.cn}</h1>
+          <h2>{themeLabels[theme.name] ?? theme.name}</h2>
           <p className="archetype-note">{result.archetype.note}</p>
-          <span className="portrait-signature">Tonight, distilled.</span>
+          <span className="portrait-signature">把今夜，调成一杯酒。</span>
           <div className="portrait-meta">
-            <span><small>ATMOSPHERE</small>{theme.name}</span>
-            <span><small>MOOD COLOR</small><i style={{ background: theme.color }} />{theme.moodColor}</span>
-            <span><small>STRENGTH</small>{result.cocktail.strength}</span>
+            <span><small>今夜氛围</small>{themeLabels[theme.name] ?? theme.name}</span>
+            <span><small>情绪色泽</small><i style={{ background: theme.color }} />{moodColorLabels[theme.moodColor] ?? theme.moodColor}</span>
+            <span><small>酒体浓度</small>{strengthZh(result.cocktail.strength)}</span>
           </div>
         </motion.div>
 
         <div className="portrait-grid">
           <section className="symbols-panel">
-            <p className="kicker">COFFEE SYMBOLS</p>
+            <p className="kicker">杯底留下的三枚征兆</p>
             <div className="symbol-row">
               {result.coffeeSymbols.map((symbol, index) => {
                 const SymbolIcon = symbolIcons?.[index] ?? Star;
-                return <div className="symbol" key={`${symbol[0]}-${index}`}><SymbolIcon /><strong>{symbol[0]}</strong><span>{symbol[1]}</span></div>;
+                return <div className="symbol" key={`${symbol[0]}-${index}`}><SymbolIcon /><strong>{symbol[1]}</strong><span>{symbol[2]}</span></div>;
               })}
             </div>
             <p className="reading">{result.reading}</p>
           </section>
 
           <section className="scores-panel">
-            <p className="kicker">INNER WEATHER</p>
+            <p className="kicker">你的内在天气</p>
             <ScoreBar label="情绪深度" value={result.scores.emotionDepth} />
             <ScoreBar label="社交欲" value={result.scores.socialDesire} />
             <ScoreBar label="探索欲" value={result.scores.exploration} />
@@ -353,18 +356,18 @@ function Portrait() {
             <Image src="/images/collections/cocktail-lineup.png" alt="七款不同风格的 MoodMix 鸡尾酒陈列" fill sizes="100vw" />
             <div className="cocktail-visual-frame" aria-hidden="true" />
             <span className="cocktail-visual-index">MM<br />04</span>
-            <div className="cocktail-visual-caption"><span>THE COLLECTION</span><i />SEVEN DIRECTIONS</div>
+            <div className="cocktail-visual-caption"><span>今夜酒款陈列</span><i />七种风味方向</div>
           </div>
           <div className="cocktail-editorial">
             <div className="cocktail-title">
-              <p className="kicker">YOUR COCKTAIL</p>
+              <p className="kicker">你的今夜特调</p>
               <h2>{result.cocktail.name}</h2>
-              <span>Based on {result.cocktail.basedOn}</span>
+              <span>以 {cocktailNameZh(result.cocktail.basedOn)} 为经典骨架</span>
             </div>
             <blockquote>{result.cocktail.story}</blockquote>
             <div className="recipe-grid">
-              <div><small>INGREDIENTS</small><p>{result.cocktail.ingredients}</p><p>{result.cocktail.modification}</p></div>
-              <div><small>METHOD</small><p>{result.cocktail.method}</p><p>Garnish: {result.cocktail.garnish}</p><p>{result.cocktail.bartenderNote}</p></div>
+              <div><small>单杯配方</small><p>{recipeSpec.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</p><p>{result.cocktail.modification}</p></div>
+              <div><small>制作方式</small><p>{recipeSpec.steps.join("")}</p><p>装饰：{barTextZh(recipeSpec.garnish)}</p><p>{result.cocktail.bartenderNote}</p></div>
             </div>
           </div>
         </section>
@@ -386,17 +389,17 @@ function Portrait() {
         </section>
 
         <section className="experiences">
-          <p className="kicker">CURATED EXPERIENCES</p>
+          <p className="kicker">为你搭配的微醺体验</p>
           <div className="experience-grid">
-            <article><span>01</span><h3>The Solitude Ritual</h3><p>专属鸡尾酒 · 咖啡占卜卡 · 音乐推荐</p></article>
-            <article><span>02</span><h3>The Two Souls Session</h3><p>双人测试 · 味觉契合度 · 共享鸡尾酒</p><small>COMING SOON</small></article>
-            <article><span>03</span><h3>The Artist&apos;s Flight</h3><p>三种情绪阶段 · 三杯 tasting flight</p></article>
+            <article><span>01</span><h3>独处者的夜间仪式</h3><p>专属鸡尾酒 · 咖啡占卜卡 · 音乐推荐</p></article>
+            <article><span>02</span><h3>双人灵魂密谈</h3><p>双人测试 · 味觉契合度 · 共享鸡尾酒</p><small>即将开启</small></article>
+            <article><span>03</span><h3>艺术家的三杯旅程</h3><p>三种情绪阶段 · 三杯风味递进</p></article>
           </div>
         </section>
 
         <div className="result-actions">
-          <button className="primary-action" onClick={downloadPoster} disabled={posterBusy}><Download size={17} /> {posterBusy ? "Composing" : "Download poster"}</button>
-          <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "Copied" : "Share result"}</button>
+          <button className="primary-action" onClick={downloadPoster} disabled={posterBusy}><Download size={17} /> {posterBusy ? "正在绘制今夜海报" : "下载今夜海报"}</button>
+          <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "已复制分享文案" : "分享今夜结果"}</button>
           <button className="icon-button" onClick={reset} title="重新开始" aria-label="重新开始"><RotateCcw size={18} /></button>
         </div>
       </section>

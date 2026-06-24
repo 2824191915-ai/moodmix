@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
+import { barTextZh, categoryLabels, cocktailNameZh } from "@/lib/bar-localization";
 import { cocktails } from "@/lib/moodmix";
+import { getProfessionalSpec } from "@/lib/professional-specs";
 
 const categories = ["All", "Spirit-forward", "Sour", "Highball", "Tropical", "Sparkling", "Low ABV"] as const;
 type Category = (typeof categories)[number];
@@ -27,7 +29,7 @@ export default function CocktailLibrary() {
   const [expanded, setExpanded] = useState(false);
   const filtered = useMemo(() => cocktails.filter((cocktail) => {
     const matchesCategory = category === "All" || groups[category].has(cocktail[0]);
-    const haystack = `${cocktail[0]} ${cocktail[1]}`.toLowerCase();
+    const haystack = `${cocktail[0]} ${cocktailNameZh(cocktail[0])} ${cocktail[1]}`.toLowerCase();
     return matchesCategory && haystack.includes(query.trim().toLowerCase());
   }), [category, query]);
   const visible = expanded || query ? filtered : filtered.slice(0, 12);
@@ -35,19 +37,20 @@ export default function CocktailLibrary() {
   return (
     <section className="cocktail-library">
       <div className="library-heading">
-        <div><p className="kicker">THE CLASSIC LIBRARY</p><h2>48 款经典，七种夜晚语言</h2></div>
-        <div className="library-count"><strong>48</strong><span>PROFESSIONAL<br />SPECIFICATIONS</span></div>
+        <div><p className="kicker">经典鸡尾酒谱藏</p><h2>48 款经典，七种夜晚语言</h2></div>
+        <div className="library-count"><strong>48</strong><span>款专业<br />可执行酒谱</span></div>
       </div>
       <div className="library-toolbar">
         <div className="library-search"><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索酒名或基酒" aria-label="搜索鸡尾酒" /></div>
-        <div className="library-filters" aria-label="酒款类型"><SlidersHorizontal size={15} />{categories.map((item) => <button key={item} className={category === item ? "is-active" : ""} onClick={() => { setCategory(item); setExpanded(false); }}>{item}</button>)}</div>
+        <div className="library-filters" aria-label="酒款类型"><SlidersHorizontal size={15} />{categories.map((item) => <button key={item} className={category === item ? "is-active" : ""} onClick={() => { setCategory(item); setExpanded(false); }}>{categoryLabels[item]}</button>)}</div>
       </div>
       <div className="library-collection-visual"><Image src="/images/collections/cocktail-lineup.png" alt="七款鸡尾酒组成的 MoodMix 酒款系列" fill sizes="100vw" /></div>
       <div className="library-grid">
         {visible.map((cocktail) => {
           const type = categoryFor(cocktail[0]);
+          const specification = getProfessionalSpec(cocktail[0]);
           return <article className="library-card" data-category={type} key={cocktail[0]}>
-            <div className="library-card-copy"><span>{type}</span><h3>{cocktail[0]}</h3><p>{cocktail[1]}</p><small>{cocktail[2]}</small></div>
+            <div className="library-card-copy"><span>{categoryLabels[type]}</span><h3>{cocktailNameZh(cocktail[0])}</h3><p>{specification.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</p><small>{specification.steps.join("")}</small></div>
           </article>;
         })}
       </div>

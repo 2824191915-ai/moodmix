@@ -1,3 +1,5 @@
+import { barTextZh, cocktailNameZh } from "@/lib/bar-localization";
+
 export type RecipeIngredient = {
   amount: string;
   item: string;
@@ -107,13 +109,13 @@ export function getProfessionalSpec(classic: string): ProfessionalSpec {
 }
 
 export function buildBartenderBrief(specification: ProfessionalSpec, selectedKeywords: string[]) {
-  const ingredients = specification.ingredients.map((item) => `${item.amount} ${item.item}${item.note ? ` (${item.note})` : ""}`).join("；");
+  const ingredients = specification.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}${item.note ? `（${barTextZh(item.note)}）` : ""}`).join("；");
   return [
-    `基底：${specification.classic}｜标准：${specification.standard}`,
+    `经典骨架：${cocktailNameZh(specification.classic)}｜标准：${specification.standard === "IBA OFFICIAL" ? "国际调酒师协会官方酒谱" : "MoodMix 创作酒谱"}`,
     `配方：${ingredients}`,
-    `杯型/冰：${specification.glassware}｜${specification.ice}`,
-    `技法：${specification.technique}。${specification.steps.join("")}`,
-    `装饰：${specification.garnish}｜目标：${specification.target}`,
-    `沟通关键词：${selectedKeywords.join(" / ")}`,
+    `杯型与冰型：${barTextZh(specification.glassware)}｜${barTextZh(specification.ice)}`,
+    `技法：${barTextZh(specification.technique)}。${specification.steps.join("")}`,
+    `装饰：${barTextZh(specification.garnish)}｜目标：${specification.target}`,
+    `沟通关键词：${selectedKeywords.map(barTextZh).join(" / ")}`,
   ].join("\n");
 }

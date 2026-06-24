@@ -78,7 +78,7 @@ export const questions: Question[] = [
   {
     id: "q1",
     chapter: "atmosphere",
-    eyebrow: "01 / A CITY",
+    eyebrow: "01 / 一座城市",
     prompt: "如果今晚是一座城市，你会走进哪里？",
     options: [
       { id: "vienna", title: "维也纳", note: "咖啡馆与金色大厅", themes: ["vienna", "golden"], scores: { control: 10, romance: 5 } },
@@ -90,7 +90,7 @@ export const questions: Question[] = [
   {
     id: "q2",
     chapter: "atmosphere",
-    eyebrow: "02 / A SOUND",
+    eyebrow: "02 / 一种声音",
     prompt: "此刻，哪一种声音最接近你？",
     options: [
       { id: "vinyl", title: "黑胶沙沙声", note: "旧旋律仍有温度", themes: ["golden", "vienna"], scores: { emotionDepth: 8, control: 5 } },
@@ -102,7 +102,7 @@ export const questions: Question[] = [
   {
     id: "q3",
     chapter: "atmosphere",
-    eyebrow: "03 / A TEMPO",
+    eyebrow: "03 / 今夜速度",
     prompt: "你希望今晚以怎样的速度经过？",
     options: [
       { id: "settle", title: "慢慢沉淀", note: "让余韵比答案更久", themes: ["vienna", "golden"], scores: { emotionDepth: 10, socialDesire: -7 } },
@@ -114,7 +114,7 @@ export const questions: Question[] = [
   {
     id: "q4",
     chapter: "atmosphere",
-    eyebrow: "04 / A KEEPSAKE",
+    eyebrow: "04 / 想带走的事物",
     prompt: "你最想从今晚带走什么？",
     options: [
       { id: "spark", title: "灵感", note: "一个尚未命名的新念头", themes: ["tokyo", "golden"], scores: { exploration: 12 } },
@@ -126,7 +126,7 @@ export const questions: Question[] = [
   {
     id: "q5",
     chapter: "reading",
-    eyebrow: "05 / AN ECHO",
+    eyebrow: "05 / 最近的回声",
     prompt: "最近，你最常想起什么？",
     options: [
       { id: "person", title: "一个人", note: "名字没有说出口", scores: { romance: 15, emotionDepth: 8 } },
@@ -138,7 +138,7 @@ export const questions: Question[] = [
   {
     id: "q6",
     chapter: "reading",
-    eyebrow: "06 / WEATHER",
+    eyebrow: "06 / 内在天气",
     prompt: "如果把最近一周变成天气？",
     options: [
       { id: "fog", title: "雾", note: "边界变得柔软", scores: { emotionDepth: 10, pressure: 6 } },
@@ -150,7 +150,7 @@ export const questions: Question[] = [
   {
     id: "q7",
     chapter: "reading",
-    eyebrow: "07 / A STATE",
+    eyebrow: "07 / 此刻状态",
     prompt: "现在，哪个词离你最近？",
     options: [
       { id: "drifting", title: "漂流", note: "允许水流暂时决定方向", scores: { control: -13, exploration: 7 } },
@@ -162,7 +162,7 @@ export const questions: Question[] = [
   {
     id: "q8",
     chapter: "reading",
-    eyebrow: "08 / FIRST GLANCE",
+    eyebrow: "08 / 第一眼",
     prompt: "走进一家酒吧，你最先注意什么？",
     options: [
       { id: "light", title: "灯光", note: "颜色先于语言抵达", scores: { romance: 10, emotionDepth: 5 } },
@@ -332,8 +332,8 @@ export function createResult(answers: Record<string, string>, mbti?: string) {
   const cocktail = cocktails.find((item) => item[0] === base) ?? cocktails[0];
   const eligible = symbols.filter((symbol) => (symbol[3] as readonly string[]).includes(theme));
   const coffeeSymbols = [0, 1, 2].map((offset) => eligible[(seed + offset) % eligible.length]);
-  const namePrefix = ["Nocturne", "Velvet", "Hidden", "Amber", "Lunar", "Afterglow"][seed % 6];
-  const nameSuffix = ["Key", "Compass", "Ritual", `No. ${((seed % 8) + 1).toString()}`, "Echo", "Signal"][(seed >> 2) % 6];
+  const namePrefix = ["夜曲", "天鹅绒", "隐秘", "琥珀", "月光", "余晖"][seed % 6];
+  const nameSuffix = ["钥匙", "罗盘", "仪式", `第 ${((seed % 8) + 1).toString()} 夜`, "回声", "暗号"][(seed >> 2) % 6];
   const strength = scores.pressure > 72 ? "Low" : scores.control > 70 || scores.emotionDepth > 72 ? "Strong" : "Medium";
   const modifications = scores.pressure > 70
     ? "以冷萃茶和少量蜂蜜降低刺激，让尾韵更柔和"
@@ -352,7 +352,7 @@ export function createResult(answers: Record<string, string>, mbti?: string) {
     archetype,
     coffeeSymbols,
     cocktail: {
-      name: `${namePrefix} ${nameSuffix}`,
+      name: `${namePrefix}·${nameSuffix}`,
       basedOn: cocktail[0],
       ingredients: cocktail[1],
       method: cocktail[2],
@@ -363,7 +363,7 @@ export function createResult(answers: Record<string, string>, mbti?: string) {
       story,
     },
     reading,
-    music: theme === "tokyo" ? "Ambient Electronica / City Pop" : theme === "velvet" ? "Dark Jazz / Slow Brass" : "Debussy / Jazz Noir / Late-night Piano",
+    music: theme === "tokyo" ? "氛围电子 · 都市流行" : theme === "velvet" ? "暗夜爵士 · 慢板铜管" : "德彪西 · 黑色爵士 · 深夜钢琴",
     message: scores.pressure > 68
       ? "你并不缺少方向。你只是需要一个更安静的夜晚，听见自己真正的判断。"
       : "今晚不必成为答案。让它成为你重新认出自己的那束光。",

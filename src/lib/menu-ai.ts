@@ -27,11 +27,11 @@ export function menuImage(index: number) {
 
 export function fallbackMenu(classic: string, mood: string): GeneratedMenu {
   return {
-    title: `${mood} · Three Acts`,
+    title: `${mood} · 今夜三幕`,
     serviceNote: "由浓至轻出杯；每杯保持克制改造与清晰经典骨架。",
     drinks: [
       {
-        name: "Amber Overture",
+        name: "琥珀序曲",
         concept: `以 ${classic} 的结构开启夜晚，保留骨架，只加一层烘烤与柑橘。`,
         basedOn: classic,
         ingredients: [{ amount: "45 ml", item: "Bourbon" }, { amount: "20 ml", item: "Sweet vermouth" }, { amount: "7.5 ml", item: "Amontillado sherry" }, { amount: "2 dash", item: "Cacao bitters" }],
@@ -43,7 +43,7 @@ export function fallbackMenu(classic: string, mood: string): GeneratedMenu {
         keywords: ["spirit-forward", "dry", "amber"],
       },
       {
-        name: "Pearl Interlude",
+        name: "珍珠间奏",
         concept: "以茉莉、梨与柠檬创造带细密泡沫的柔亮中场。",
         basedOn: "Clover Club",
         ingredients: [{ amount: "40 ml", item: "London dry gin" }, { amount: "20 ml", item: "Fresh lemon juice" }, { amount: "15 ml", item: "Jasmine pear cordial" }, { amount: "20 ml", item: "Aquafaba" }],
@@ -55,7 +55,7 @@ export function fallbackMenu(classic: string, mood: string): GeneratedMenu {
         keywords: ["floral", "silky", "pale"],
       },
       {
-        name: "Celadon Coda",
+        name: "青瓷尾声",
         concept: "以清透气泡收尾，让紫苏与黄瓜留下干净、低酒精度的余韵。",
         basedOn: "Americano",
         ingredients: [{ amount: "30 ml", item: "Dry vermouth" }, { amount: "20 ml", item: "Fino sherry" }, { amount: "15 ml", item: "Verjus" }, { amount: "75 ml", item: "Shiso soda" }],
