@@ -14,8 +14,14 @@ import {
   parseRitualEnhancement,
   toRitualContext,
 } from "../src/lib/ritual-ai.ts";
+import {
+  validateGeneratedMenu,
+  validateRitualEnhancement,
+} from "../src/lib/quality-guard.ts";
 import nextConfig from "../next.config.ts";
 import { professionalSpecs } from "../src/lib/professional-specs.ts";
+import { barTextZh, cocktailNameZh } from "../src/lib/bar-localization.ts";
+import { fallbackMenu } from "../src/lib/menu-ai.ts";
 
 const tokyoAnswers = {
   q1: "tokyo",
@@ -41,6 +47,8 @@ test("result generation supports an omitted MBTI", () => {
   assert.equal(result.theme, "tokyo");
   assert.ok(Number.isFinite(result.seed));
   assert.ok(result.cocktail.basedOn);
+  assert.equal(result.observations.length, 3);
+  assert.ok(result.observations.every((note) => note.observation && note.evidence && note.inference && note.identity));
 });
 
 test("coffee reading always contains three unique symbols", () => {
@@ -88,6 +96,38 @@ test("AI enhancement preserves the classic recipe contract", () => {
   assert.equal(enhanced.cocktail.ingredients, result.cocktail.ingredients);
   assert.equal(enhanced.cocktail.method, result.cocktail.method);
   assert.equal(enhanced.cocktail.garnish, result.cocktail.garnish);
+});
+
+test("bar terms are Chinese first with English originals as supporting labels", () => {
+  assert.equal(cocktailNameZh("Negroni"), "内格罗尼（Negroni）");
+  assert.equal(barTextZh("Gin · Fresh lemon juice"), "金酒（Gin） · 鲜榨柠檬汁（Fresh lemon juice）");
+});
+
+test("ritual QA rejects English residue and missing symbol evidence", () => {
+  const result = createResult(tokyoAnswers);
+  const context = toRitualContext(result);
+  const report = validateRitualEnhancement({
+    cocktailName: "Night Signal",
+    story: `这是属于${context.archetype.chineseName}的故事，线索很清楚，但这里留下 English residue。`,
+    reading: `${context.coffeeSymbols[0].chineseName}提醒你慢下来，第二个线索没有出现，第三个线索也没有出现。`,
+    message: "今晚请把判断还给自己。",
+    bartenderNote: "保持经典比例，只在杯口加入一层轻柔香气。",
+  }, context);
+  assert.equal(report.passed, false);
+  assert.ok(report.issues.includes("english_residue"));
+  assert.ok(report.issues.includes("logic_conflict"));
+});
+
+test("menu QA rejects duplicate generated cocktails", () => {
+  const menu = fallbackMenu("Negroni", "东京霓虹雨");
+  const duplicated = {
+    ...menu,
+    drinks: [menu.drinks[0], menu.drinks[0], menu.drinks[2]],
+  };
+  const report = validateGeneratedMenu(duplicated);
+  assert.equal(report.passed, false);
+  assert.ok(report.issues.includes("duplicate_name"));
+  assert.ok(report.issues.includes("duplicate_cocktail"));
 });
 
 test("development origins keep the client interactive on local URLs", () => {

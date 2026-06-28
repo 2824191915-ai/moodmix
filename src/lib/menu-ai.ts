@@ -1,4 +1,5 @@
-import type { RecipeIngredient } from "@/lib/professional-specs";
+import type { RecipeIngredient } from "./professional-specs.ts";
+import { cocktailNameZh } from "./bar-localization.ts";
 
 export type MenuDrink = {
   name: string;
@@ -26,13 +27,14 @@ export function menuImage(index: number) {
 }
 
 export function fallbackMenu(classic: string, mood: string): GeneratedMenu {
+  const classicLabel = cocktailNameZh(classic);
   return {
     title: `${mood} · 今夜三幕`,
     serviceNote: "由浓至轻出杯；每杯保持克制改造与清晰经典骨架。",
     drinks: [
       {
         name: "琥珀序曲",
-        concept: `以 ${classic} 的结构开启夜晚，保留骨架，只加一层烘烤与柑橘。`,
+        concept: `以${classicLabel}的结构开启夜晚，保留骨架，只加一层烘烤与柑橘。`,
         basedOn: classic,
         ingredients: [{ amount: "45 ml", item: "Bourbon" }, { amount: "20 ml", item: "Sweet vermouth" }, { amount: "7.5 ml", item: "Amontillado sherry" }, { amount: "2 dash", item: "Cacao bitters" }],
         steps: ["全部材料加满硬冰搅拌 22 秒。", "滤入预冷 Nick & Nora，表达橙皮油。"],

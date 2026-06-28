@@ -12,12 +12,16 @@ const terms: Array<[string, string]> = [
 ];
 
 export function cocktailNameZh(name: string) {
-  return cocktailNames[name] ?? name;
+  const translated = cocktailNames[name];
+  return translated ? `${translated}（${name}）` : name;
 }
 
 export function barTextZh(value: string | undefined) {
   if (!value) return "";
-  return terms.reduce((text, [source, target]) => text.replaceAll(source, target), value);
+  return terms.reduce((text, [source, target]) => {
+    const label = /[A-Za-z]/.test(source) ? `${target}（${source}）` : target;
+    return text.replaceAll(source, label);
+  }, value);
 }
 
 export function strengthZh(value: string) {

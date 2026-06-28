@@ -32,6 +32,13 @@ export type Question = {
   options: AnswerOption[];
 };
 
+export type ObservationNote = {
+  observation: string;
+  evidence: string;
+  inference: string;
+  identity: string;
+};
+
 export const themes: Record<
   ThemeId,
   { name: string; subtitle: string; color: string; moodColor: string }
@@ -323,6 +330,53 @@ function chooseArchetype(scores: Scores, theme: ThemeId, seed: number) {
 
 export type MoodResult = ReturnType<typeof createResult>;
 
+function selectedOption(answers: Record<string, string>, questionId: string) {
+  const question = questions.find((item) => item.id === questionId);
+  return question?.options.find((item) => item.id === answers[questionId]);
+}
+
+function buildObservationNotes(
+  answers: Record<string, string>,
+  scores: Scores,
+  theme: ThemeId,
+  archetype: (typeof archetypes)[number],
+): ObservationNote[] {
+  const city = selectedOption(answers, "q1");
+  const sound = selectedOption(answers, "q2");
+  const speed = selectedOption(answers, "q3");
+  const keepsake = selectedOption(answers, "q4");
+  const echo = selectedOption(answers, "q5");
+  const weather = selectedOption(answers, "q6");
+  const state = selectedOption(answers, "q7");
+  const barFirstLook = selectedOption(answers, "q8");
+  const themeName = themes[theme].subtitle;
+
+  return [
+    {
+      observation: "你先选择空间与声音，再选择今晚的速度。",
+      evidence: `城市线索是「${city?.title ?? "未知"}」，声音线索是「${sound?.title ?? "未知"}」，速度停在「${speed?.title ?? "未知"}」。`,
+      inference: `这些线索把夜晚推向「${themeName}」：它不是装饰风格，而是你今晚愿意被世界触碰的方式。`,
+      identity: `因此，${archetype.cn}先以氛围被看见，而不是被分数定义。`,
+    },
+    {
+      observation: "你对关系、目标和决定的反应，暴露了真正占据心里的东西。",
+      evidence: `你想带走「${keepsake?.title ?? "未知"}」，最近的回声来自「${echo?.title ?? "未知"}」，一周天气像「${weather?.title ?? "未知"}」。`,
+      inference: scores.pressure >= 68
+        ? "压力不是结论，它只是提醒你需要更清楚的边界和更慢的判断。"
+        : "情绪没有催促你立刻行动，它更像一盏灯，帮你确认什么仍然重要。",
+      identity: `这让${archetype.cn}的底色更完整：${archetype.note}。`,
+    },
+    {
+      observation: "最后的状态与第一眼注意力，决定这杯酒如何落地。",
+      evidence: `此刻状态是「${state?.title ?? "未知"}」，走进酒吧先看见「${barFirstLook?.title ?? "未知"}」。`,
+      inference: scores.control >= 70
+        ? "你需要清晰结构，所以酒谱保留经典骨架，只在尾韵做克制改造。"
+        : "你更需要被轻轻带走，所以酒谱把经典结构留住，同时放进一点柔软的偏航。",
+      identity: `最终身份不是标签，而是一套可被端上吧台的夜间证据。`,
+    },
+  ];
+}
+
 export function createResult(answers: Record<string, string>, mbti?: string) {
   const seed = hashAnswers(answers) + (mbti ? mbti.charCodeAt(0) : 0);
   const scores = calculateScores(answers);
@@ -344,12 +398,14 @@ export function createResult(answers: Record<string, string>, mbti?: string) {
         : "加入冷萃咖啡与黑樱桃苦精，让夜色更深但仍然清晰";
   const reading = `${coffeeSymbols[0][1]}提醒你相信直觉，${coffeeSymbols[1][1]}指向正在发生的变化，而${coffeeSymbols[2][1]}把注意力带回下一步。今晚无需急着证明什么，先让真正重要的声音被你听见。`;
   const story = `这杯酒保留 ${cocktail[0]} 的经典骨架，${modifications}。它属于${archetype.cn}：不追逐喧闹的答案，只在光线变暗之后，让判断、渴望与一点勇气慢慢显形。`;
+  const observations = buildObservationNotes(answers, scores, theme, archetype);
 
   return {
     seed,
     scores,
     theme,
     archetype,
+    observations,
     coffeeSymbols,
     cocktail: {
       name: `${namePrefix}·${nameSuffix}`,

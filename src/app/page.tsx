@@ -301,10 +301,33 @@ function Portrait() {
 
   const shareResult = async () => {
     const text = `今夜，我是${result.archetype.cn}。MoodMix 为我调制了「${result.cocktail.name}」，以${cocktailNameZh(result.cocktail.basedOn)}为经典骨架。`;
+    const copyText = async () => {
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error("clipboard_unavailable");
+        await navigator.clipboard?.writeText(text);
+        return true;
+      } catch {
+        const fallback = document.createElement("textarea");
+        fallback.value = text;
+        fallback.setAttribute("readonly", "");
+        fallback.style.position = "fixed";
+        fallback.style.left = "-999px";
+        document.body.appendChild(fallback);
+        fallback.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(fallback);
+        return copied;
+      }
+    };
+
     try {
-      if (navigator.share) await navigator.share({ title: "我的 MoodMix 今夜肖像", text });
-      else await navigator.clipboard.writeText(text);
+      await copyText();
       setShared(true);
+      if (navigator.share) {
+        window.setTimeout(() => {
+          void navigator.share({ title: "我的 MoodMix 今夜肖像", text }).catch(() => undefined);
+        }, 0);
+      }
     } catch {
       setShared(false);
     }
@@ -327,6 +350,26 @@ function Portrait() {
             <span><small>酒体浓度</small>{strengthZh(result.cocktail.strength)}</span>
           </div>
         </motion.div>
+
+        <section className="observation-panel">
+          <div className="observation-heading">
+            <p className="kicker">Observation Engine</p>
+            <h2>从线索到身份</h2>
+          </div>
+          <div className="observation-rail">
+            {result.observations.map((note, index) => (
+              <article className="observation-card" key={`${note.observation}-${index}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <dl>
+                  <dt>观察</dt><dd>{note.observation}</dd>
+                  <dt>证据</dt><dd>{note.evidence}</dd>
+                  <dt>推理</dt><dd>{note.inference}</dd>
+                  <dt>身份</dt><dd>{note.identity}</dd>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <div className="portrait-grid">
           <section className="symbols-panel">
@@ -375,7 +418,7 @@ function Portrait() {
         <BartenderStudio
           classic={result.cocktail.basedOn}
           cocktailName={result.cocktail.name}
-          mood={theme.name}
+          mood={themeLabels[theme.name] ?? theme.name}
           portrait={result.archetype.name}
           story={result.cocktail.story}
         />
@@ -399,7 +442,7 @@ function Portrait() {
 
         <div className="result-actions">
           <button className="primary-action" onClick={downloadPoster} disabled={posterBusy}><Download size={17} /> {posterBusy ? "正在绘制今夜海报" : "下载今夜海报"}</button>
-          <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "已复制分享文案" : "分享今夜结果"}</button>
+          <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "分享文案已准备" : "分享今夜结果"}</button>
           <button className="icon-button" onClick={reset} title="重新开始" aria-label="重新开始"><RotateCcw size={18} /></button>
         </div>
       </section>

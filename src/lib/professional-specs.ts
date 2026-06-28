@@ -1,4 +1,4 @@
-import { barTextZh, cocktailNameZh } from "@/lib/bar-localization";
+import { barTextZh, cocktailNameZh } from "./bar-localization.ts";
 
 export type RecipeIngredient = {
   amount: string;
