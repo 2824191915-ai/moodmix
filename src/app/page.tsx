@@ -115,7 +115,7 @@ function Welcome() {
         <div className="welcome-shade" aria-hidden="true" />
         <motion.div className="welcome-content" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
           <div className="welcome-prelude"><p className="kicker">情绪 · 象征 · 经典酒谱</p><span>第 004 号夜间仪式</span></div>
-          <h1>MoodMix<small>今夜情绪调酒</small></h1>
+          <h1>MoodMix</h1>
           <div className="welcome-signature"><span>一幅可饮用的情绪肖像</span><i /> <span>仅为今晚调制</span></div>
           <p className="welcome-copy">用八个瞬间，读出今晚的情绪、人格与一杯真正可被调出的酒。</p>
           <div className="welcome-actions">
