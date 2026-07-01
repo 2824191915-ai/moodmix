@@ -22,7 +22,7 @@ import nextConfig from "../next.config.ts";
 import { professionalSpecs } from "../src/lib/professional-specs.ts";
 import { barTextZh, cocktailNameZh } from "../src/lib/bar-localization.ts";
 import { fallbackMenu } from "../src/lib/menu-ai.ts";
-import { buildArtFlightPlan } from "../src/lib/art-flight.ts";
+import { ART_FLIGHT_SET_COUNT, buildArtFlightPlan } from "../src/lib/art-flight.ts";
 
 const tokyoAnswers = {
   q1: "tokyo",
@@ -140,6 +140,22 @@ test("art flight plan creates three actionable painting-backed cocktails", () =>
   assert.ok(plan.every((drink) => drink.actionLabel.includes("复制")));
   assert.ok(plan.every((drink) => drink.serviceScript.includes("配方：") && drink.serviceScript.includes("名画：")));
   assert.ok(plan.every((drink) => drink.artwork.imageUrl.startsWith("https://commons.wikimedia.org/")));
+});
+
+test("art flight plan rotates through at least eight rich three-drink sets", () => {
+  assert.ok(ART_FLIGHT_SET_COUNT >= 8);
+  const firstDrinks = new Set();
+  const allDrinkNames = new Set();
+  for (let seed = 0; seed < ART_FLIGHT_SET_COUNT; seed += 1) {
+    const plan = buildArtFlightPlan("Negroni", "东京霓虹雨", seed);
+    assert.equal(plan.length, 3);
+    assert.ok(plan.every((drink) => drink.ingredients.length >= 4));
+    assert.ok(plan.every((drink) => drink.steps.length >= 2));
+    firstDrinks.add(plan[0].name);
+    plan.forEach((drink) => allDrinkNames.add(drink.name));
+  }
+  assert.ok(firstDrinks.size >= 8);
+  assert.ok(allDrinkNames.size >= 24);
 });
 
 test("development origins keep the client interactive on local URLs", () => {
