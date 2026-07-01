@@ -118,10 +118,15 @@ function Welcome() {
         <div className="welcome-image" aria-hidden="true" />
         <div className="welcome-shade" aria-hidden="true" />
         <motion.div className="welcome-content" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
-          <div className="welcome-prelude"><p className="kicker">情绪 · 象征 · 经典酒谱</p><span>第 004 号夜间仪式</span></div>
+          <div className="welcome-prelude"><p className="kicker">Mood Reading · Cocktail Ritual</p><span>第 004 号夜间仪式</span></div>
           <h1>MoodMix</h1>
           <div className="welcome-signature"><span>一幅可饮用的情绪肖像</span><i /> <span>仅为今晚调制</span></div>
-          <p className="welcome-copy">用八个瞬间，读出今晚的情绪、人格与一杯真正可被调出的酒。</p>
+          <p className="welcome-copy">八个瞬间，读出你的夜间人格、专属人格色，以及一杯真正可被调出的酒。</p>
+          <div className="welcome-proof" aria-label="MoodMix 核心系统">
+            <span><b>32</b>人格色谱</span>
+            <span><b>08</b>夜间提问</span>
+            <span><b>03</b>名画酒单</span>
+          </div>
           <div className="welcome-actions">
             <button className="primary-action" onClick={start}>
               开启今夜配方 <ArrowRight size={17} />
@@ -135,9 +140,17 @@ function Welcome() {
             </label>
           </div>
         </motion.div>
+        <aside className="welcome-rail" aria-label="今夜系统">
+          <span>THE NIGHT INDEX</span>
+          <dl>
+            <div><dt>人格</dt><dd>像星座一样被看见，但保留一点未说透的暗面。</dd></div>
+            <div><dt>色彩</dt><dd>每一种人格对应一种高级低饱和色。</dd></div>
+            <div><dt>酒单</dt><dd>名画、风味和测试结果彼此关联。</dd></div>
+          </dl>
+        </aside>
         <div className="welcome-edition"><EditionSeal /><span>萃取<br />今夜</span></div>
         <div className="welcome-foot">
-          <span>08 道夜间提问</span><span>01 幅情绪肖像</span><span className="welcome-foot-line" /><span>把今夜，调成一杯酒</span>
+          <span>PERSONA / COLOR / COCKTAIL</span><span>MOODMIX 04</span><span className="welcome-foot-line" /><span>把今夜，调成一杯酒</span>
         </div>
       </section>
     </Shell>
