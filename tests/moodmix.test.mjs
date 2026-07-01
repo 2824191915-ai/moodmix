@@ -38,7 +38,7 @@ const tokyoAnswers = {
 test("MVP data pools meet the PRD scope", () => {
   assert.equal(Object.keys(themes).length, 6);
   assert.equal(questions.length, 8);
-  assert.equal(archetypes.length, 16);
+  assert.equal(archetypes.length, 32);
   assert.equal(cocktails.length, 48);
   assert.equal(symbols.length, 20);
 });
@@ -59,6 +59,18 @@ test("coffee reading always contains three unique symbols", () => {
   assert.equal(new Set(names).size, 3);
 });
 
+test("archetype titles stay readable, poetic, and distinct", () => {
+  const titles = archetypes.map((archetype) => archetype.cn);
+  const colors = archetypes.map((archetype) => archetype.color);
+  const colorNames = archetypes.map((archetype) => archetype.colorName);
+  assert.equal(new Set(titles).size, titles.length);
+  assert.equal(new Set(colors).size, colors.length);
+  assert.equal(new Set(colorNames).size, colorNames.length);
+  assert.ok(titles.every((title) => title.length >= 5 && title.length <= 6));
+  assert.ok(colors.every((color) => /^#[0-9a-f]{6}$/i.test(color)));
+  assert.ok(archetypes.every((archetype) => archetype.note.length >= 20 && archetype.note.length <= 48));
+});
+
 test("every answer option produces bounded scores", () => {
   for (let optionIndex = 0; optionIndex < 4; optionIndex += 1) {
     const answers = Object.fromEntries(
@@ -69,6 +81,21 @@ test("every answer option produces bounded scores", () => {
       assert.ok(score >= 0 && score <= 100);
     });
   }
+});
+
+test("all 32 archetypes are reachable through answer combinations", () => {
+  const seen = new Set();
+  const walk = (index, answers) => {
+    if (index === questions.length) {
+      seen.add(createResult(answers).archetype.id);
+      return;
+    }
+    for (const option of questions[index].options) {
+      walk(index + 1, { ...answers, [questions[index].id]: option.id });
+    }
+  };
+  walk(0, {});
+  assert.equal(seen.size, archetypes.length);
 });
 
 test("AI context contains only the bounded ritual inputs", () => {
@@ -133,13 +160,25 @@ test("menu QA rejects duplicate generated cocktails", () => {
 
 test("art flight plan creates three actionable painting-backed cocktails", () => {
   const result = createResult(tokyoAnswers);
-  const plan = buildArtFlightPlan(result.cocktail.basedOn, "东京霓虹雨", result.seed);
+  const context = {
+    archetypeId: result.archetype.id,
+    colorName: result.archetype.colorName,
+    scores: result.scores,
+    themeId: result.theme,
+  };
+  const plan = buildArtFlightPlan(result.cocktail.basedOn, "东京霓虹雨", result.seed, context);
+  const topTraits = Object.entries(result.scores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([trait]) => trait);
   assert.equal(plan.length, 3);
   assert.equal(new Set(plan.map((drink) => drink.name)).size, 3);
   assert.equal(new Set(plan.map((drink) => drink.artwork.id)).size, 3);
   assert.ok(plan.every((drink) => drink.actionLabel.includes("复制")));
-  assert.ok(plan.every((drink) => drink.serviceScript.includes("配方：") && drink.serviceScript.includes("名画：")));
+  assert.ok(plan.every((drink) => drink.serviceScript.includes("配方：") && drink.serviceScript.includes("名画：") && drink.serviceScript.includes("关联理由：")));
   assert.ok(plan.every((drink) => drink.artwork.imageUrl.startsWith("https://commons.wikimedia.org/")));
+  assert.ok(plan.some((drink) => drink.artwork.affinity.archetypes.includes(result.archetype.id) || drink.artwork.affinity.themes.includes(result.theme) || topTraits.some((trait) => drink.artwork.affinity.traits.includes(trait))));
+  assert.ok(plan.every((drink) => drink.matchNote.includes(result.archetype.colorName)));
 });
 
 test("art flight plan rotates through at least eight rich three-drink sets", () => {

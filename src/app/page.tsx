@@ -34,7 +34,7 @@ import BartenderStudio from "@/components/BartenderStudio";
 import CocktailLibrary from "@/components/CocktailLibrary";
 import { buildArtFlightPlan } from "@/lib/art-flight";
 import { barTextZh, cocktailNameZh, moodColorLabels, strengthZh, themeLabels } from "@/lib/bar-localization";
-import { chooseTheme, questions, themes, type ThemeId } from "@/lib/moodmix";
+import { archetypes, chooseTheme, questions, themes, type ThemeId } from "@/lib/moodmix";
 import { getProfessionalSpec } from "@/lib/professional-specs";
 import { useMoodMix } from "@/store/useMoodMix";
 
@@ -234,7 +234,12 @@ function Portrait() {
   const [copiedArtPlan, setCopiedArtPlan] = useState<number | null>(null);
   const theme = result ? themes[result.theme] : themes.golden;
   const symbolIcons = useMemo(() => result?.coffeeSymbols.map((symbol) => iconMap[symbol[0] as keyof typeof iconMap] ?? Star), [result]);
-  const artFlight = useMemo(() => result ? buildArtFlightPlan(result.cocktail.basedOn, themeLabels[theme.name] ?? theme.name, result.seed) : [], [result, theme.name]);
+  const artFlight = useMemo(() => result ? buildArtFlightPlan(result.cocktail.basedOn, themeLabels[theme.name] ?? theme.name, result.seed, {
+    archetypeId: result.archetype.id,
+    colorName: result.archetype.colorName,
+    scores: result.scores,
+    themeId: result.theme,
+  }) : [], [result, theme.name]);
   if (!result) return null;
   const recipeSpec = getProfessionalSpec(result.cocktail.basedOn);
 
@@ -265,9 +270,9 @@ function Portrait() {
     } catch {
       // The poster remains complete without the optional editorial image.
     }
-    ctx.fillStyle = theme.color;
+    ctx.fillStyle = result.archetype.color;
     ctx.fillRect(68, 68, 5, 1784);
-    ctx.strokeStyle = `${theme.color}66`;
+    ctx.strokeStyle = `${result.archetype.color}66`;
     ctx.lineWidth = 1;
     ctx.strokeRect(106, 106, 868, 1708);
     ctx.strokeRect(126, 126, 828, 1668);
@@ -277,7 +282,7 @@ function Portrait() {
     ctx.font = "94px Didot, Georgia";
     ctx.fillText(result.archetype.cn, 156, 470);
     ctx.font = "48px sans-serif";
-    ctx.fillStyle = theme.color;
+    ctx.fillStyle = result.archetype.color;
     ctx.fillText("今夜人格肖像", 156, 548);
     ctx.font = "34px sans-serif";
     ctx.fillStyle = "#b8b4ad";
@@ -286,7 +291,7 @@ function Portrait() {
     ctx.fillStyle = "#f4f0e8";
     ctx.fillText(result.cocktail.name, 156, 1050);
     ctx.font = "30px sans-serif";
-    ctx.fillStyle = theme.color;
+    ctx.fillStyle = result.archetype.color;
     ctx.fillText(`经典骨架  ${cocktailNameZh(result.cocktail.basedOn)}`, 156, 1122);
     ctx.font = "34px Georgia";
     ctx.fillStyle = "#d6d1c7";
@@ -306,7 +311,7 @@ function Portrait() {
   };
 
   const shareResult = async () => {
-    const text = `今夜，我是${result.archetype.cn}。MoodMix 为我调制了「${result.cocktail.name}」，以${cocktailNameZh(result.cocktail.basedOn)}为经典骨架。`;
+    const text = `今夜，我是${result.archetype.cn}，人格色是${result.archetype.colorName}。MoodMix 为我调制了「${result.cocktail.name}」，以${cocktailNameZh(result.cocktail.basedOn)}为经典骨架。`;
     const copyText = async () => {
       try {
         if (!navigator.clipboard?.writeText) throw new Error("clipboard_unavailable");
@@ -367,10 +372,10 @@ function Portrait() {
 
   return (
     <Shell themeId={result.theme}>
-      <section className="portrait-wrap">
-        <div className="portrait-masthead"><span>MOODMIX 私享夜间版</span><i /><span>肖像 {String((result.seed % 16) + 1).padStart(2, "0")} / 16</span></div>
+      <section className="portrait-wrap" style={{ "--accent": result.archetype.color } as React.CSSProperties}>
+        <div className="portrait-masthead"><span>MOODMIX 私享夜间版</span><i /><span>肖像 {String((result.seed % archetypes.length) + 1).padStart(2, "0")} / {archetypes.length}</span></div>
         <motion.div className="portrait-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className="portrait-number">{String((result.seed % 16) + 1).padStart(2, "0")}</div>
+          <div className="portrait-number">{String((result.seed % archetypes.length) + 1).padStart(2, "0")}</div>
           <p className="kicker">你的今夜人格肖像</p>
           <h1>{result.archetype.cn}</h1>
           <h2>{themeLabels[theme.name] ?? theme.name}</h2>
@@ -378,7 +383,7 @@ function Portrait() {
           <span className="portrait-signature">把今夜，调成一杯酒。</span>
           <div className="portrait-meta">
             <span><small>今夜氛围</small>{themeLabels[theme.name] ?? theme.name}</span>
-            <span><small>情绪色泽</small><i style={{ background: theme.color }} />{moodColorLabels[theme.moodColor] ?? theme.moodColor}</span>
+            <span><small>人格色彩</small><i style={{ background: result.archetype.color }} />{result.archetype.colorName}</span>
             <span><small>酒体浓度</small>{strengthZh(result.cocktail.strength)}</span>
           </div>
         </motion.div>
@@ -478,7 +483,7 @@ function Portrait() {
               <p className="kicker">三杯名画计划</p>
               <h2>把今晚，挂进一间流动美术馆</h2>
             </div>
-            <p>三杯从开场、中段到收尾递进，每杯都给出可复制的实际做法，并以不同名画作为海报背景与审美提示。</p>
+            <p>三杯从开场、中段到收尾递进，名画会依据你的人格类型、人格色与内在分数匹配，不再只是装饰背景。</p>
           </div>
           <div className="art-flight-grid">
             {artFlight.map((drink, index) => (
@@ -503,6 +508,7 @@ function Portrait() {
                     <span><Palette size={13} /> {drink.artwork.period}</span>
                     <strong>{drink.artwork.title}</strong>
                     <small>{drink.artwork.artist} · {drink.artwork.originalTitle}</small>
+                    <p>{drink.matchNote}</p>
                     <p>{drink.artwork.note}</p>
                     <a href={drink.artwork.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={12} /> 查看名画来源</a>
                   </div>

@@ -181,22 +181,38 @@ export const questions: Question[] = [
 ];
 
 export const archetypes = [
-  { id: "moon-collector", name: "Moon Collector", cn: "月光收藏家", note: "敏感、内省、善于保存细微的光", bases: ["Black Manhattan", "Espresso Martini", "Toronto"] },
-  { id: "velvet-dreamer", name: "Velvet Dreamer", cn: "天鹅绒梦想家", note: "浪漫、艺术，让柔软成为力量", bases: ["Aviation", "Clover Club", "Bee's Knees"] },
-  { id: "silent-composer", name: "Silent Composer", cn: "沉默作曲家", note: "克制、优雅，在秩序中安排情绪", bases: ["Manhattan", "Dry Martini", "Bamboo"] },
-  { id: "golden-wanderer", name: "Golden Wanderer", cn: "黄金漫游者", note: "自由、新鲜，愿意为好奇心绕远路", bases: ["Mai Tai", "Margarita", "Caipirinha"] },
-  { id: "midnight-philosopher", name: "Midnight Philosopher", cn: "午夜哲学家", note: "深度、理性，总能看见问题的背面", bases: ["Boulevardier", "Negroni", "Trinidad Sour"] },
-  { id: "burning-rebel", name: "Burning Rebel", cn: "燃烧反叛者", note: "热烈、戏剧性，不为掌声修改自己", bases: ["Mezcal Margarita", "Jungle Bird", "Naked and Famous"] },
-  { id: "lost-navigator", name: "Lost Navigator", cn: "迷途领航员", note: "即使暂时迷雾，也仍然向前", bases: ["Penicillin", "Whiskey Sour", "El Diablo"] },
-  { id: "cafe-poet", name: "Café Poet", cn: "咖啡馆诗人", note: "用文字、咖啡和雨天收纳世界", bases: ["Espresso Martini", "Coffee Negroni", "Rusty Nail"] },
-  { id: "neon-observer", name: "Neon Observer", cn: "霓虹观察者", note: "都市、冷静，与喧闹保持一寸距离", bases: ["Gimlet", "Dry Martini", "Southside"] },
-  { id: "rose-strategist", name: "Rose Strategist", cn: "玫瑰战略家", note: "外柔内强，魅力与判断从不冲突", bases: ["French 75", "Vieux Carré", "Brandy Crusta"] },
-  { id: "sea-listener", name: "Sea Listener", cn: "海岸倾听者", note: "温和、舒展，能给他人留下空间", bases: ["Daiquiri", "Mojito", "Paloma"] },
-  { id: "glass-alchemist", name: "Glass Alchemist", cn: "玻璃炼金术师", note: "实验、奇想，习惯重写旧规则", bases: ["Last Word", "Paper Plane", "Corpse Reviver No. 2"] },
-  { id: "amber-guardian", name: "Amber Guardian", cn: "琥珀守护者", note: "可靠、成熟，是房间里稳定的火光", bases: ["Old Fashioned", "Sazerac", "Adonis"] },
-  { id: "rain-romantic", name: "Rain Romantic", cn: "雨夜浪漫者", note: "感性、念旧，相信关系留下的回声", bases: ["Sidecar", "French 75", "Pisco Sour"] },
-  { id: "snow-minimalist", name: "Snow Minimalist", cn: "雪地极简者", note: "清醒、自持，知道什么可以舍去", bases: ["Dry Martini", "Low ABV Spritz", "Hugo Spritz"] },
-  { id: "stage-charmer", name: "Stage Charmer", cn: "舞台魅力者", note: "闪耀、慷慨，擅长点亮共同的夜晚", bases: ["Champagne Cocktail", "Cosmopolitan", "Singapore Sling"] },
+  { id: "moon-collector", name: "Moon Collector", cn: "月下拾光者", colorName: "月影淡紫", color: "#b8a6d9", note: "敏感而细心，常把别人忽略的小光亮悄悄收好", bases: ["Black Manhattan", "Espresso Martini", "Toronto"] },
+  { id: "velvet-dreamer", name: "Velvet Dreamer", cn: "软心造梦人", colorName: "旧玫瑰粉", color: "#c46a8a", note: "心里有柔软的剧场，也懂得把想象变成真实的勇气", bases: ["Aviation", "Clover Club", "Bee's Knees"] },
+  { id: "silent-composer", name: "Silent Composer", cn: "安静编曲人", colorName: "烟灰石褐", color: "#8c8577", note: "不急着开口，却总能把混乱整理成自己的节拍", bases: ["Manhattan", "Dry Martini", "Bamboo"] },
+  { id: "golden-wanderer", name: "Golden Wanderer", cn: "风中漫游者", colorName: "古董金", color: "#c9a64e", note: "喜欢新鲜的路，也相信绕远一点会遇见更好的答案", bases: ["Mai Tai", "Margarita", "Caipirinha"] },
+  { id: "midnight-philosopher", name: "Midnight Philosopher", cn: "深夜想事人", colorName: "午夜海军蓝", color: "#1f2a44", note: "习惯在安静时看见问题背面，清醒里藏着一点孤独", bases: ["Boulevardier", "Negroni", "Trinidad Sour"] },
+  { id: "burning-rebel", name: "Burning Rebel", cn: "火光出走者", colorName: "陶土赤铜", color: "#a6422b", note: "热烈、不太服输，愿意为真正想要的东西离开原地", bases: ["Mezcal Margarita", "Jungle Bird", "Naked and Famous"] },
+  { id: "lost-navigator", name: "Lost Navigator", cn: "迷雾赶路人", colorName: "雾面蓝灰", color: "#8797a5", note: "就算暂时看不清方向，也没有停止往前走，像在雾里认路", bases: ["Penicillin", "Whiskey Sour", "El Diablo"] },
+  { id: "cafe-poet", name: "Café Poet", cn: "雨窗写信人", colorName: "咖啡棕", color: "#6f4e37", note: "容易被旧事和天气打动，却总能把情绪写得温柔", bases: ["Espresso Martini", "Coffee Negroni", "Rusty Nail"] },
+  { id: "neon-observer", name: "Neon Observer", cn: "城市旁观者", colorName: "深孔雀青", color: "#0e6f73", note: "站在人群边缘看得很清楚，热闹也很难把你淹没", bases: ["Gimlet", "Dry Martini", "Southside"] },
+  { id: "rose-strategist", name: "Rose Strategist", cn: "带刺温柔派", colorName: "覆盆子酒红", color: "#8e3a59", note: "温柔不是退让，你的分寸感里有清醒的保护和秘密秩序", bases: ["French 75", "Vieux Carré", "Brandy Crusta"] },
+  { id: "sea-listener", name: "Sea Listener", cn: "海边听风人", colorName: "海玻璃绿", color: "#5f8c8c", note: "给别人空间，也给自己呼吸；你的安静并不空白", bases: ["Daiquiri", "Mojito", "Paloma"] },
+  { id: "glass-alchemist", name: "Glass Alchemist", cn: "玻璃造梦师", colorName: "青瓷冷绿", color: "#9db7b5", note: "总想换一种做法试试，平凡规则在你手里会发光", bases: ["Last Word", "Paper Plane", "Corpse Reviver No. 2"] },
+  { id: "amber-guardian", name: "Amber Guardian", cn: "暖灯守夜人", colorName: "琥珀焦糖", color: "#b07d3c", note: "可靠、沉稳，像夜里留着的一盏灯，让人愿意靠近", bases: ["Old Fashioned", "Sazerac", "Adonis"] },
+  { id: "rain-romantic", name: "Rain Romantic", cn: "旧雨念信人", colorName: "烟紫丁香", color: "#6e587a", note: "相信回忆仍有温度，也愿意把没说完的话轻轻放下", bases: ["Sidecar", "French 75", "Pisco Sour"] },
+  { id: "snow-minimalist", name: "Snow Minimalist", cn: "雪后留白者", colorName: "暖象牙灰", color: "#d8d2c4", note: "清醒、自持，知道有些空白比填满更接近自己", bases: ["Dry Martini", "Low ABV Spritz", "Hugo Spritz"] },
+  { id: "stage-charmer", name: "Stage Charmer", cn: "聚光点灯人", colorName: "香槟金", color: "#d6b15f", note: "自带光感，也愿意把热闹分给身边的人，像替夜晚点灯", bases: ["Champagne Cocktail", "Cosmopolitan", "Singapore Sling"] },
+  { id: "pine-walker", name: "Pine Walker", cn: "松间慢行者", colorName: "深橄榄绿", color: "#4f6f52", note: "你不急着证明自己，更信任缓慢生长出来的答案", bases: ["Bamboo", "Hugo Spritz", "Gin Basil Smash"] },
+  { id: "ebony-reader", name: "Ebony Reader", cn: "乌木藏书人", colorName: "乌木黑褐", color: "#2a2725", note: "外表安静，心里却有很多章节，越靠近越能读到深处", bases: ["Black Manhattan", "Vieux Carré", "Rusty Nail"] },
+  { id: "pearl-buffer", name: "Pearl Buffer", cn: "珍珠缓冲者", colorName: "珍珠暖白", color: "#e7ddca", note: "你擅长把尖锐的东西放软，不让关系轻易碎掉", bases: ["Clover Club", "Bee's Knees", "Low ABV Spritz"] },
+  { id: "dark-river", name: "Dark River", cn: "暗河直觉者", colorName: "暗河蓝绿", color: "#2f4a5a", note: "很多判断你说不清来源，却常常比理性更早抵达", bases: ["Negroni", "Toronto", "Last Word"] },
+  { id: "silver-decider", name: "Silver Decider", cn: "银匙决断者", colorName: "冷银灰", color: "#a8aeb2", note: "你看似克制，其实很清楚自己愿意把筹码放在哪里", bases: ["Dry Martini", "Sazerac", "Manhattan"] },
+  { id: "flower-adventurer", name: "Flower Adventurer", cn: "花房冒险家", colorName: "玫瑰木粉", color: "#b76e79", note: "你温柔地冒险，像把一扇窗打开，让风和故事进来", bases: ["French 75", "Aviation", "Cosmopolitan"] },
+  { id: "amber-reviewer", name: "Amber Reviewer", cn: "琥珀复盘者", colorName: "烟熏威士忌", color: "#996b3d", note: "你会把经历慢慢沉淀，最后提炼成一条只属于自己的经验", bases: ["Old Fashioned", "Boulevardier", "Whiskey Sour"] },
+  { id: "celadon-breather", name: "Celadon Breather", cn: "青瓷呼吸者", colorName: "鼠尾草绿", color: "#a7b8a0", note: "你需要安静的空气，也会在松弛时长出很强的韧性", bases: ["Mojito", "Paloma", "Southside"] },
+  { id: "ebony-boundary", name: "Ebony Boundary", cn: "黑檀边界者", colorName: "炭黑紫灰", color: "#353235", note: "你不会轻易被打扰，因为边界是你保存热情的方式", bases: ["Dry Martini", "Adonis", "Toronto"] },
+  { id: "crimson-page", name: "Crimson Page", cn: "绯页收藏者", colorName: "深绯书页", color: "#9f4a45", note: "你记得很多细节，像书页夹住一朵还没有褪色的花", bases: ["Sidecar", "Pisco Sour", "Brandy Crusta"] },
+  { id: "mist-blue", name: "Mist Blue", cn: "雾蓝清醒者", colorName: "雾霾蓝", color: "#6f8fa3", note: "情绪来时你不躲开，但也不会让它替你做决定", bases: ["Gimlet", "Low ABV Spritz", "Bamboo"] },
+  { id: "moss-secret", name: "Moss Secret", cn: "苔石守密人", colorName: "苔藓石绿", color: "#596b4d", note: "你有可靠的沉默，也有不轻易展示给人的柔软部分", bases: ["Penicillin", "Bamboo", "Americano"] },
+  { id: "copper-social", name: "Copper Social", cn: "铜镜社交家", colorName: "古铜玫瑰", color: "#b87355", note: "你能照亮场面，也能照见别人没有说出口的需要", bases: ["Champagne Cocktail", "Singapore Sling", "French 75"] },
+  { id: "yew-night", name: "Yew Night", cn: "紫杉夜行者", colorName: "茄紫夜色", color: "#5b486b", note: "你有一点神秘的慢热，越到深夜越接近真实的自己", bases: ["Aviation", "Naked and Famous", "Corpse Reviver No. 2"] },
+  { id: "dune-blank", name: "Dune Blank", cn: "沙丘留白者", colorName: "沙丘驼金", color: "#c2a878", note: "你不害怕空白，因为你知道下一步会从沉默里浮出来", bases: ["Daiquiri", "Caipirinha", "Tommy's Margarita"] },
+  { id: "wine-maker", name: "Wine Maker", cn: "酒红造势者", colorName: "深酒红", color: "#6b2737", note: "你有把气氛推向高潮的能力，也懂得何时把光收回来", bases: ["Jungle Bird", "Mezcal Margarita", "Trinidad Sour"] },
 ] as const;
 
 export const cocktails = [
@@ -313,19 +329,43 @@ export function chooseTheme(answers: Record<string, string>): ThemeId {
   return (Object.entries(votes) as [ThemeId, number][]).sort((a, b) => b[1] - a[1])[0][0];
 }
 
+function pickArchetype(indexes: readonly number[], seed: number) {
+  return archetypes[indexes[Math.abs(seed) % indexes.length]];
+}
+
 function chooseArchetype(scores: Scores, theme: ThemeId, seed: number) {
-  if (scores.socialDesire >= 72) return archetypes[15];
-  if (scores.exploration >= 74) return seed % 2 ? archetypes[3] : archetypes[11];
-  if (scores.pressure >= 72) {
-    if (scores.control >= 65) return archetypes[14];
-    if (scores.romance >= 65) return archetypes[7];
-    return archetypes[6];
+  if (scores.socialDesire >= 72) {
+    if (scores.romance >= 68) return pickArchetype([15, 28, 31], seed);
+    if (scores.control >= 66) return pickArchetype([9, 20, 28], seed);
+    return pickArchetype([15, 28, 5, 31], seed);
   }
-  if (scores.emotionDepth >= 72) return scores.control >= 64 ? archetypes[4] : archetypes[0];
-  if (scores.romance >= 72) return seed % 2 ? archetypes[1] : archetypes[13];
-  if (scores.control >= 73) return seed % 3 === 0 ? archetypes[9] : seed % 2 ? archetypes[2] : archetypes[12];
-  const themed = { golden: 2, moon: 0, velvet: 5, tokyo: 8, nordic: 10, vienna: 7 } as const;
-  return archetypes[themed[theme]];
+  if (scores.exploration >= 74) {
+    if (scores.romance >= 62) return pickArchetype([3, 21, 29], seed);
+    if (scores.control >= 62) return pickArchetype([11, 20, 26], seed);
+    return pickArchetype([3, 11, 16, 30], seed);
+  }
+  if (scores.pressure >= 72) {
+    if (scores.control >= 65) return pickArchetype([14, 20, 24, 26], seed);
+    if (scores.romance >= 65) return pickArchetype([7, 13, 25, 29], seed);
+    return pickArchetype([6, 19, 27], seed);
+  }
+  if (scores.emotionDepth >= 72) {
+    if (scores.control >= 64) return pickArchetype([4, 17, 19, 22], seed);
+    if (scores.romance >= 62) return pickArchetype([0, 7, 13, 25], seed);
+    return pickArchetype([0, 18, 27, 29], seed);
+  }
+  if (scores.romance >= 72) return pickArchetype([1, 13, 21, 25], seed);
+  if (scores.control >= 73) return pickArchetype([2, 9, 12, 20, 24], seed);
+  if (scores.pressure <= 34) return pickArchetype([10, 16, 23, 30], seed);
+  const themed = {
+    golden: [2, 12, 15, 22],
+    moon: [0, 14, 18, 26],
+    velvet: [1, 5, 9, 31],
+    tokyo: [8, 19, 20, 24],
+    nordic: [10, 16, 23, 27],
+    vienna: [7, 17, 25, 28],
+  } as const;
+  return pickArchetype(themed[theme], seed);
 }
 
 export type MoodResult = ReturnType<typeof createResult>;

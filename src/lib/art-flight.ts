@@ -1,4 +1,5 @@
 import { barTextZh, cocktailNameZh } from "./bar-localization.ts";
+import type { Scores, ThemeId } from "./moodmix.ts";
 import type { MenuDrink } from "./menu-ai.ts";
 
 export type ArtworkPairing = {
@@ -11,13 +12,26 @@ export type ArtworkPairing = {
   imageUrl: string;
   sourceUrl: string;
   note: string;
+  affinity: {
+    themes: ThemeId[];
+    archetypes: string[];
+    traits: Array<keyof Scores>;
+  };
 };
 
 export type ArtFlightDrink = MenuDrink & {
   act: string;
   artwork: ArtworkPairing;
   actionLabel: string;
+  matchNote: string;
   serviceScript: string;
+};
+
+export type ArtFlightContext = {
+  archetypeId?: string;
+  colorName?: string;
+  scores?: Scores;
+  themeId?: ThemeId;
 };
 
 const artworks: ArtworkPairing[] = [
@@ -31,6 +45,7 @@ const artworks: ArtworkPairing[] = [
     imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Tsunami%20by%20hokusai%2019th%20century.jpg?width=1600",
     sourceUrl: "https://en.wikipedia.org/wiki/The_Great_Wave_off_Kanagawa",
     note: "浪峰像刀锋一样收紧，远处富士山却保持静默，适合开场时唤醒感官。",
+    affinity: { themes: ["tokyo", "nordic"], archetypes: ["lost-navigator", "dark-river", "mist-blue", "sea-listener"], traits: ["exploration", "pressure"] },
   },
   {
     id: "pearl-earring",
@@ -42,6 +57,7 @@ const artworks: ArtworkPairing[] = [
     imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/1665%20Girl%20with%20a%20Pearl%20Earring.jpg?width=1400",
     sourceUrl: "https://en.wikipedia.org/wiki/Girl_with_a_Pearl_Earring",
     note: "一束光落在回眸与珍珠上，安静却有张力，适合中段放慢谈话。",
+    affinity: { themes: ["moon", "vienna"], archetypes: ["pearl-buffer", "silent-composer", "silver-decider", "rose-strategist"], traits: ["control", "emotionDepth"] },
   },
   {
     id: "water-lilies",
@@ -53,6 +69,7 @@ const artworks: ArtworkPairing[] = [
     imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/WLA%20metmuseum%20Water%20Lilies%20by%20Claude%20Monet.jpg?width=1800",
     sourceUrl: "https://en.wikipedia.org/wiki/Water_Lilies_(1919)",
     note: "水面把夕光揉成色块，边界不再锋利，适合收尾时留下柔和余韵。",
+    affinity: { themes: ["moon", "nordic", "vienna"], archetypes: ["celadon-breather", "snow-minimalist", "sea-listener", "pearl-buffer"], traits: ["romance", "pressure"] },
   },
   {
     id: "paris-rain",
@@ -64,6 +81,7 @@ const artworks: ArtworkPairing[] = [
     imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Gustave%20Caillebotte%20-%20Paris%20Street%3B%20Rainy%20Day%20-%20Google%20Art%20Project.jpg?width=1800",
     sourceUrl: "https://en.wikipedia.org/wiki/Paris_Street%3B_Rainy_Day",
     note: "雨伞、街角与透视线把城市整理得冷静克制，适合需要结构感的夜晚。",
+    affinity: { themes: ["tokyo", "moon", "vienna"], archetypes: ["neon-observer", "cafe-poet", "rain-romantic", "mist-blue"], traits: ["control", "emotionDepth"] },
   },
   {
     id: "primavera",
@@ -75,6 +93,7 @@ const artworks: ArtworkPairing[] = [
     imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Sandro%20Botticelli%20-%20La%20Primavera%20-%20Google%20Art%20Project.jpg?width=1800",
     sourceUrl: "https://en.wikipedia.org/wiki/Primavera_(Botticelli)",
     note: "花园、神话与节奏感让画面像一场低声庆典，适合浪漫而明亮的中场。",
+    affinity: { themes: ["velvet", "vienna", "golden"], archetypes: ["flower-adventurer", "velvet-dreamer", "stage-charmer", "copper-social"], traits: ["romance", "socialDesire"] },
   },
   {
     id: "the-kiss",
@@ -86,6 +105,55 @@ const artworks: ArtworkPairing[] = [
     imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/The%20Kiss%20-%20Gustav%20Klimt%20-%20Google%20Cultural%20Institute.jpg?width=1600",
     sourceUrl: "https://en.wikipedia.org/wiki/The_Kiss_(Klimt)",
     note: "金色装饰吞没背景，只留下亲密姿态，适合把夜晚推向更华丽的高潮。",
+    affinity: { themes: ["velvet", "golden", "vienna"], archetypes: ["rain-romantic", "stage-charmer", "wine-maker", "rose-strategist"], traits: ["romance", "socialDesire"] },
+  },
+  {
+    id: "starry-night",
+    title: "星月夜",
+    originalTitle: "The Starry Night",
+    artist: "文森特·梵高",
+    period: "后印象派 · 1889",
+    palette: "深钴蓝、星黄、柏树黑",
+    imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Van%20Gogh%20-%20Starry%20Night%20-%20Google%20Art%20Project.jpg?width=1600",
+    sourceUrl: "https://en.wikipedia.org/wiki/The_Starry_Night",
+    note: "夜空旋转得像情绪本身，村庄却安静伏在下方，适合高敏感和高压力的内心天气。",
+    affinity: { themes: ["moon", "tokyo"], archetypes: ["moon-collector", "midnight-philosopher", "dark-river", "yew-night"], traits: ["emotionDepth", "pressure"] },
+  },
+  {
+    id: "wanderer-fog",
+    title: "雾海上的旅人",
+    originalTitle: "Wanderer above the Sea of Fog",
+    artist: "卡斯帕·大卫·弗里德里希",
+    period: "德国浪漫主义 · 1818",
+    palette: "雾灰、松绿、岩石褐",
+    imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Caspar%20David%20Friedrich%20-%20Wanderer%20above%20the%20sea%20of%20fog.jpg?width=1600",
+    sourceUrl: "https://en.wikipedia.org/wiki/Wanderer_above_the_Sea_of_Fog",
+    note: "背影站在高处，前方不是答案而是一整片雾，适合正在出发、判断或重建方向的人。",
+    affinity: { themes: ["nordic", "moon"], archetypes: ["lost-navigator", "pine-walker", "dune-blank", "golden-wanderer"], traits: ["exploration", "control"] },
+  },
+  {
+    id: "ophelia",
+    title: "奥菲莉娅",
+    originalTitle: "Ophelia",
+    artist: "约翰·埃弗里特·米莱",
+    period: "拉斐尔前派 · 1851-1852",
+    palette: "水草绿、花瓣白、暗河蓝",
+    imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/John%20Everett%20Millais%20-%20Ophelia%20-%20Google%20Art%20Project.jpg?width=1800",
+    sourceUrl: "https://en.wikipedia.org/wiki/Ophelia_(painting)",
+    note: "花朵与水面把脆弱画得极美，也提醒人从情绪中重新把自己打捞回来。",
+    affinity: { themes: ["moon", "velvet"], archetypes: ["rain-romantic", "crimson-page", "dark-river", "pearl-buffer"], traits: ["emotionDepth", "romance", "pressure"] },
+  },
+  {
+    id: "almond-blossom",
+    title: "杏花",
+    originalTitle: "Almond Blossom",
+    artist: "文森特·梵高",
+    period: "后印象派 · 1890",
+    palette: "晴空蓝、杏花白、新枝绿",
+    imageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Vincent%20van%20Gogh%20-%20Almond%20blossom%20-%20Google%20Art%20Project.jpg?width=1600",
+    sourceUrl: "https://en.wikipedia.org/wiki/Almond_Blossoms",
+    note: "枝条向天空伸展，像一种重新开始的信号，适合低压力、轻盈或正在恢复能量的人。",
+    affinity: { themes: ["golden", "nordic", "vienna"], archetypes: ["flower-adventurer", "pearl-buffer", "celadon-breather", "dune-blank"], traits: ["romance", "exploration"] },
   },
 ];
 
@@ -420,19 +488,51 @@ const flightSets: Array<{ title: string; drinks: MenuDrink[] }> = [
   },
 ];
 
-function rotateArtworks(seed: number) {
-  const start = seed % artworks.length;
-  return [0, 1, 2].map((offset) => artworks[(start + offset * 2) % artworks.length]);
+function topScoreTraits(scores: Scores | undefined) {
+  if (!scores) return [];
+  return (Object.entries(scores) as Array<[keyof Scores, number]>)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([trait]) => trait);
+}
+
+function artworkMatchScore(artwork: ArtworkPairing, context: ArtFlightContext, seed: number) {
+  let score = seed % 7;
+  if (context.themeId && artwork.affinity.themes.includes(context.themeId)) score += 20;
+  if (context.archetypeId && artwork.affinity.archetypes.includes(context.archetypeId)) score += 28;
+  topScoreTraits(context.scores).forEach((trait, index) => {
+    if (artwork.affinity.traits.includes(trait)) score += 14 - index * 3;
+  });
+  return score;
+}
+
+function selectArtworks(seed: number, context: ArtFlightContext) {
+  return [...artworks]
+    .map((artwork, index) => ({ artwork, score: artworkMatchScore(artwork, context, seed + index) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(({ artwork }) => artwork);
+}
+
+function buildMatchNote(artwork: ArtworkPairing, context: ArtFlightContext) {
+  const links = [];
+  if (context.themeId && artwork.affinity.themes.includes(context.themeId)) links.push("今夜氛围");
+  if (context.archetypeId && artwork.affinity.archetypes.includes(context.archetypeId)) links.push("人格类型");
+  const traits = topScoreTraits(context.scores).filter((trait) => artwork.affinity.traits.includes(trait));
+  if (traits.length > 0) links.push("内在分数");
+  const prefix = links.length > 0 ? `它回应你的${links.join("、")}` : "它回应你今晚答案里的潜在线索";
+  return `${prefix}，并把${context.colorName ?? "人格色"}延伸成一幅可观看的情绪背景。`;
 }
 
 export const ART_FLIGHT_SET_COUNT = flightSets.length;
 
-export function buildArtFlightPlan(classic: string, mood: string, seed: number): ArtFlightDrink[] {
+export function buildArtFlightPlan(classic: string, mood: string, seed: number, context: ArtFlightContext = {}): ArtFlightDrink[] {
   const menu = flightSets[seed % flightSets.length];
-  const selectedArtworks = rotateArtworks(seed);
+  const selectedArtworks = selectArtworks(seed, context);
   return menu.drinks.map((drink, index) => {
     const artwork = selectedArtworks[index];
     const name = drink.name;
+    const matchNote = buildMatchNote(artwork, context);
     const serviceScript = [
       `${name}｜第 0${index + 1} 杯`,
       `三杯主题：${menu.title} / ${mood}`,
@@ -442,6 +542,7 @@ export function buildArtFlightPlan(classic: string, mood: string, seed: number):
       `制作：${drink.steps.map(barTextZh).join("")}`,
       `出杯：${barTextZh(drink.glassware)} · ${barTextZh(drink.ice)} · ${barTextZh(drink.garnish)}`,
       `名画：${artwork.title}，${artwork.artist}，${artwork.period}`,
+      `关联理由：${matchNote}`,
       `审美提示：${artwork.note}`,
     ].join("\n");
 
@@ -451,6 +552,7 @@ export function buildArtFlightPlan(classic: string, mood: string, seed: number):
       artwork,
       act: ["开场", "中段", "收尾"][index],
       actionLabel: ["复制开场做法", "复制中段做法", "复制收尾做法"][index],
+      matchNote,
       serviceScript,
     };
   });
