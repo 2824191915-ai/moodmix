@@ -7,16 +7,19 @@ import {
   ArrowRight,
   Bird,
   Compass,
+  Copy,
   Download,
   Eye,
   Feather,
   Flame,
   Flower2,
+  ExternalLink,
   Hourglass,
   KeyRound,
   Menu,
   Moon,
   Music2,
+  Palette,
   RotateCcw,
   Share2,
   Sparkles,
@@ -29,6 +32,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import BartenderStudio from "@/components/BartenderStudio";
 import CocktailLibrary from "@/components/CocktailLibrary";
+import { buildArtFlightPlan } from "@/lib/art-flight";
 import { barTextZh, cocktailNameZh, moodColorLabels, strengthZh, themeLabels } from "@/lib/bar-localization";
 import { chooseTheme, questions, themes, type ThemeId } from "@/lib/moodmix";
 import { getProfessionalSpec } from "@/lib/professional-specs";
@@ -227,8 +231,10 @@ function Portrait() {
   const { result, reset } = useMoodMix();
   const [shared, setShared] = useState(false);
   const [posterBusy, setPosterBusy] = useState(false);
+  const [copiedArtPlan, setCopiedArtPlan] = useState<number | null>(null);
   const theme = result ? themes[result.theme] : themes.golden;
   const symbolIcons = useMemo(() => result?.coffeeSymbols.map((symbol) => iconMap[symbol[0] as keyof typeof iconMap] ?? Star), [result]);
+  const artFlight = useMemo(() => result ? buildArtFlightPlan(result.cocktail.basedOn, themeLabels[theme.name] ?? theme.name, result.seed) : [], [result, theme.name]);
   if (!result) return null;
   const recipeSpec = getProfessionalSpec(result.cocktail.basedOn);
 
@@ -331,6 +337,32 @@ function Portrait() {
     } catch {
       setShared(false);
     }
+  };
+
+  const copyArtDrink = async (index: number, script: string) => {
+    const copyText = async () => {
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error("clipboard_unavailable");
+        await navigator.clipboard.writeText(script);
+        return true;
+      } catch {
+        const fallback = document.createElement("textarea");
+        fallback.value = script;
+        fallback.setAttribute("readonly", "");
+        fallback.style.position = "fixed";
+        fallback.style.left = "-999px";
+        document.body.appendChild(fallback);
+        fallback.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(fallback);
+        return copied;
+      }
+    };
+
+    const copied = await copyText();
+    if (!copied) return;
+    setCopiedArtPlan(index);
+    window.setTimeout(() => setCopiedArtPlan((current) => current === index ? null : current), 1800);
   };
 
   return (
@@ -437,6 +469,49 @@ function Portrait() {
             <article><span>01</span><h3>独处者的夜间仪式</h3><p>专属鸡尾酒 · 咖啡占卜卡 · 音乐推荐</p></article>
             <article><span>02</span><h3>双人灵魂密谈</h3><p>双人测试 · 味觉契合度 · 共享鸡尾酒</p><small>即将开启</small></article>
             <article><span>03</span><h3>艺术家的三杯旅程</h3><p>三种情绪阶段 · 三杯风味递进</p></article>
+          </div>
+        </section>
+
+        <section className="art-flight-panel">
+          <div className="art-flight-heading">
+            <div>
+              <p className="kicker">三杯名画计划</p>
+              <h2>把今晚，挂进一间流动美术馆</h2>
+            </div>
+            <p>三杯从开场、中段到收尾递进，每杯都给出可复制的实际做法，并以不同名画作为海报背景与审美提示。</p>
+          </div>
+          <div className="art-flight-grid">
+            {artFlight.map((drink, index) => (
+              <article
+                className="art-flight-card"
+                key={`${drink.name}-${drink.artwork.id}`}
+                style={{ "--art-bg": `url("${drink.artwork.imageUrl}")` } as React.CSSProperties}
+              >
+                <div className="art-flight-copy">
+                  <span>第 {String(index + 1).padStart(2, "0")} 杯 · {drink.act} · {strengthZh(drink.strength)}</span>
+                  <h3>{drink.name}</h3>
+                  <p>{drink.concept}</p>
+                  <dl>
+                    <dt>配方</dt>
+                    <dd>{drink.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</dd>
+                    <dt>制作</dt>
+                    <dd>{drink.steps.map(barTextZh).join("")}</dd>
+                    <dt>出杯</dt>
+                    <dd>{barTextZh(drink.glassware)} · {barTextZh(drink.ice)} · {barTextZh(drink.garnish)}</dd>
+                  </dl>
+                  <div className="art-context">
+                    <span><Palette size={13} /> {drink.artwork.period}</span>
+                    <strong>{drink.artwork.title}</strong>
+                    <small>{drink.artwork.artist} · {drink.artwork.originalTitle}</small>
+                    <p>{drink.artwork.note}</p>
+                    <a href={drink.artwork.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={12} /> 查看名画来源</a>
+                  </div>
+                  <button className="art-action" onClick={() => copyArtDrink(index, drink.serviceScript)}>
+                    <Copy size={14} /> {copiedArtPlan === index ? "已复制做法" : drink.actionLabel}
+                  </button>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 

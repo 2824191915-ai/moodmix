@@ -22,6 +22,7 @@ import nextConfig from "../next.config.ts";
 import { professionalSpecs } from "../src/lib/professional-specs.ts";
 import { barTextZh, cocktailNameZh } from "../src/lib/bar-localization.ts";
 import { fallbackMenu } from "../src/lib/menu-ai.ts";
+import { buildArtFlightPlan } from "../src/lib/art-flight.ts";
 
 const tokyoAnswers = {
   q1: "tokyo",
@@ -128,6 +129,17 @@ test("menu QA rejects duplicate generated cocktails", () => {
   assert.equal(report.passed, false);
   assert.ok(report.issues.includes("duplicate_name"));
   assert.ok(report.issues.includes("duplicate_cocktail"));
+});
+
+test("art flight plan creates three actionable painting-backed cocktails", () => {
+  const result = createResult(tokyoAnswers);
+  const plan = buildArtFlightPlan(result.cocktail.basedOn, "东京霓虹雨", result.seed);
+  assert.equal(plan.length, 3);
+  assert.equal(new Set(plan.map((drink) => drink.name)).size, 3);
+  assert.equal(new Set(plan.map((drink) => drink.artwork.id)).size, 3);
+  assert.ok(plan.every((drink) => drink.actionLabel.includes("复制")));
+  assert.ok(plan.every((drink) => drink.serviceScript.includes("配方：") && drink.serviceScript.includes("名画：")));
+  assert.ok(plan.every((drink) => drink.artwork.imageUrl.startsWith("https://commons.wikimedia.org/")));
 });
 
 test("development origins keep the client interactive on local URLs", () => {
