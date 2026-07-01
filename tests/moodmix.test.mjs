@@ -4,6 +4,7 @@ import {
   archetypes,
   cocktails,
   createResult,
+  chooseTheme,
   questions,
   symbols,
   themes,
@@ -81,6 +82,12 @@ test("every answer option produces bounded scores", () => {
       assert.ok(score >= 0 && score <= 100);
     });
   }
+});
+
+test("quiz theme changes as soon as the first atmospheric answer is chosen", () => {
+  assert.equal(chooseTheme({ q1: "tokyo" }), "tokyo");
+  assert.equal(chooseTheme({ q1: "reykjavik" }), "nordic");
+  assert.equal(chooseTheme({ q1: "paris" }), "velvet");
 });
 
 test("all 32 archetypes are reachable through answer combinations", () => {

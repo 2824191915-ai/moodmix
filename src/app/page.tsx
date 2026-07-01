@@ -147,7 +147,7 @@ function Welcome() {
 function Quiz() {
   const { currentQuestion, answers, answer, back } = useMoodMix();
   const question = questions[currentQuestion];
-  const themeId = currentQuestion >= 4 ? chooseTheme(answers) : "golden";
+  const themeId = Object.keys(answers).length > 0 ? chooseTheme(answers) : "golden";
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
