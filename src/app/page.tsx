@@ -112,6 +112,71 @@ function getAnswerMotifs(answers?: Record<string, string>) {
     .map(([questionId, answerId]) => ({ questionId, answerId, motif: answerMotifMap[answerId] ?? "mark" }));
 }
 
+function LandmarkOutline({ cityId }: { cityId: string }) {
+  if (cityId === "paris") {
+    return (
+      <svg viewBox="0 0 240 220" role="img" aria-label="埃菲尔铁塔简笔轮廓">
+        <path d="M119 15 L75 202 M121 15 L165 202" />
+        <path d="M91 86 H149 M78 132 H162 M63 202 H177" />
+        <path d="M100 48 H140 M86 104 C105 96 135 96 154 104 M79 151 C98 141 142 141 161 151" />
+        <path d="M88 202 C98 168 142 168 152 202" />
+        <path d="M119 15 V4 M109 34 H131 M97 68 H143" />
+        <path d="M92 90 L148 132 M148 90 L92 132 M80 136 L160 202 M160 136 L80 202" />
+      </svg>
+    );
+  }
+  if (cityId === "vienna") {
+    return (
+      <svg viewBox="0 0 260 190" role="img" aria-label="维也纳金色大厅简笔轮廓">
+        <path d="M32 166 H228 M44 148 H216 M54 70 H206" />
+        <path d="M62 70 L130 28 L198 70" />
+        <path d="M78 72 V148 M104 72 V148 M130 72 V148 M156 72 V148 M182 72 V148" />
+        <path d="M69 148 V166 M191 148 V166" />
+        <path d="M88 104 C88 90 102 90 102 104 V134 H88 Z" />
+        <path d="M121 104 C121 90 139 90 139 104 V134 H121 Z" />
+        <path d="M158 104 C158 90 172 90 172 104 V134 H158 Z" />
+        <path d="M92 58 H168 M112 48 H148" />
+        <path d="M130 28 V13 M119 18 H141" />
+        <path d="M50 70 V166 M210 70 V166" />
+      </svg>
+    );
+  }
+  if (cityId === "tokyo") {
+    return (
+      <svg viewBox="0 0 260 200" role="img" aria-label="东京神社简笔轮廓">
+        <path d="M36 166 H224" />
+        <path d="M42 52 C84 44 176 44 218 52" />
+        <path d="M54 64 H206 M66 76 H194" />
+        <path d="M82 76 V166 M178 76 V166" />
+        <path d="M72 106 H188 M86 122 H174" />
+        <path d="M98 122 V166 M162 122 V166" />
+        <path d="M100 106 L130 84 L160 106" />
+        <path d="M88 122 L130 94 L172 122" />
+        <path d="M116 135 C116 124 144 124 144 135 V166 H116 Z" />
+        <path d="M57 88 V166 M203 88 V166" />
+        <path d="M48 92 H212" />
+        <path d="M122 58 H138 V75 H122 Z" />
+      </svg>
+    );
+  }
+  if (cityId === "reykjavik") {
+    return (
+      <svg viewBox="0 0 240 220" role="img" aria-label="雷克雅未克哈尔格林姆教堂简笔轮廓">
+        <path d="M120 12 V202" />
+        <path d="M96 202 V72 L120 12 L144 72 V202" />
+        <path d="M74 202 V92 L96 72 M166 202 V92 L144 72" />
+        <path d="M52 202 V114 L74 92 M188 202 V114 L166 92" />
+        <path d="M34 202 V138 L52 114 M206 202 V138 L188 114" />
+        <path d="M108 92 C108 78 132 78 132 92 V124 H108 Z" />
+        <path d="M111 146 C111 132 129 132 129 146 V202 H111 Z" />
+        <path d="M94 202 H146 M28 202 H212" />
+        <path d="M88 124 H152 M82 146 H158" />
+      </svg>
+    );
+  }
+  return null;
+}
+
 function ChoiceVisuals({ cityId, answers }: { cityId?: string; answers?: Record<string, string> }) {
   const motifs = getAnswerMotifs(answers);
   if (!cityId && motifs.length === 0) return null;
@@ -119,7 +184,7 @@ function ChoiceVisuals({ cityId, answers }: { cityId?: string; answers?: Record<
     <div className="choice-visuals" aria-hidden="true">
       {cityId && (
         <div className="landmark-outline" data-city={cityId}>
-          <span /><i /><b />
+          <LandmarkOutline cityId={cityId} />
         </div>
       )}
       <div className="answer-motif-field">
