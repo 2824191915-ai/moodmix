@@ -422,6 +422,7 @@ export function createResult(answers: Record<string, string>, mbti?: string) {
   const scores = calculateScores(answers);
   const theme = chooseTheme(answers);
   const archetype = chooseArchetype(scores, theme, seed);
+  const city = selectedOption(answers, "q1");
   const base = archetype.bases[seed % archetype.bases.length];
   const cocktail = cocktails.find((item) => item[0] === base) ?? cocktails[0];
   const eligible = symbols.filter((symbol) => (symbol[3] as readonly string[]).includes(theme));
@@ -444,6 +445,11 @@ export function createResult(answers: Record<string, string>, mbti?: string) {
     seed,
     scores,
     theme,
+    city: {
+      id: city?.id ?? "unknown",
+      title: city?.title ?? "未知城市",
+      note: city?.note ?? "今夜线索尚未命名",
+    },
     archetype,
     observations,
     coffeeSymbols,

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Bird,
+  ChevronDown,
   Compass,
   Copy,
   Download,
@@ -62,6 +63,18 @@ const iconMap = {
 } as const;
 
 const mbtiTypes = ["INTJ", "INTP", "ENTJ", "ENTP", "INFJ", "INFP", "ENFJ", "ENFP", "ISTJ", "ISFJ", "ESTJ", "ESFJ", "ISTP", "ISFP", "ESTP", "ESFP"];
+const cityScenes = {
+  vienna: { label: "Vienna", cn: "维也纳", detail: "金色乐谱 · 咖啡馆弧线", motif: "waltz" },
+  paris: { label: "Paris", cn: "巴黎", detail: "雨夜拱廊 · 画室玫瑰", motif: "atelier" },
+  tokyo: { label: "Tokyo", cn: "东京", detail: "霓虹雨线 · 玻璃秩序", motif: "neon" },
+  reykjavik: { label: "Reykjavik", cn: "雷克雅未克", detail: "冰川留白 · 极光边界", motif: "aurora" },
+} as const;
+
+type CitySceneId = keyof typeof cityScenes;
+
+function getCityScene(cityId?: string) {
+  return cityId && cityId in cityScenes ? cityScenes[cityId as CitySceneId] : null;
+}
 
 function EditionSeal({ compact = false }: { compact?: boolean }) {
   return (
@@ -82,13 +95,21 @@ function Brand() {
   );
 }
 
-function Shell({ children, themeId }: { children: React.ReactNode; themeId: ThemeId }) {
+function Shell({ children, themeId, cityId }: { children: React.ReactNode; themeId: ThemeId; cityId?: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const cityScene = getCityScene(cityId);
   return (
-    <main className="app-shell" data-theme={themeId}>
+    <main className="app-shell" data-theme={themeId} data-city={cityId ?? "none"}>
       <div className="shell-grain" aria-hidden="true" />
       <div className="shell-rule shell-rule-left" aria-hidden="true" />
       <div className="shell-rule shell-rule-right" aria-hidden="true" />
+      {cityScene && (
+        <div className="city-scene" data-motif={cityScene.motif} aria-hidden="true">
+          <span>{cityScene.label}</span>
+          <i />
+          <small>{cityScene.detail}</small>
+        </div>
+      )}
       <header className="topbar">
         <Brand />
         <div className="topbar-meta"><span>私享夜间版</span><i />为今夜调制的情绪仪式<i /><span>第 04 夜</span></div>
@@ -161,14 +182,15 @@ function Quiz() {
   const { currentQuestion, answers, answer, back } = useMoodMix();
   const question = questions[currentQuestion];
   const themeId = Object.keys(answers).length > 0 ? chooseTheme(answers) : "golden";
+  const cityScene = getCityScene(answers.q1);
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
-    <Shell themeId={themeId}>
+    <Shell themeId={themeId} cityId={answers.q1}>
       <section className="quiz-shell">
         <aside className="quiz-aside">
           <div className="quiz-aside-head">
-            <span>{question.chapter === "atmosphere" ? "调制你的今夜" : "读取情绪暗纹"}</span>
+            <span>{cityScene ? `${cityScene.cn} · ${cityScene.detail}` : question.chapter === "atmosphere" ? "调制你的今夜" : "读取情绪暗纹"}</span>
             <EditionSeal compact />
           </div>
           <strong>{String(currentQuestion + 1).padStart(2, "0")}</strong>
@@ -211,7 +233,7 @@ function Coffee() {
   }, []);
   if (!result) return null;
   return (
-    <Shell themeId={result.theme}>
+    <Shell themeId={result.theme} cityId={result.city.id}>
       <section className="coffee-stage">
         <div className="coffee-object" aria-hidden="true">
           <span className="coffee-orbit orbit-one" /><span className="coffee-orbit orbit-two" />
@@ -246,6 +268,7 @@ function Portrait() {
   const [posterBusy, setPosterBusy] = useState(false);
   const [copiedArtPlan, setCopiedArtPlan] = useState<number | null>(null);
   const theme = result ? themes[result.theme] : themes.golden;
+  const cityScene = getCityScene(result?.city.id);
   const symbolIcons = useMemo(() => result?.coffeeSymbols.map((symbol) => iconMap[symbol[0] as keyof typeof iconMap] ?? Star), [result]);
   const artFlight = useMemo(() => result ? buildArtFlightPlan(result.cocktail.basedOn, themeLabels[theme.name] ?? theme.name, result.seed, {
     archetypeId: result.archetype.id,
@@ -384,7 +407,7 @@ function Portrait() {
   };
 
   return (
-    <Shell themeId={result.theme}>
+    <Shell themeId={result.theme} cityId={result.city.id}>
       <section className="portrait-wrap" style={{ "--accent": result.archetype.color } as React.CSSProperties}>
         <div className="portrait-masthead"><span>MOODMIX 私享夜间版</span><i /><span>肖像 {String((result.seed % archetypes.length) + 1).padStart(2, "0")} / {archetypes.length}</span></div>
         <motion.div className="portrait-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -401,22 +424,36 @@ function Portrait() {
           </div>
         </motion.div>
 
-        <section className="observation-panel">
+        <motion.section className="result-overview" initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.55 }}>
+          <a href="#drink">今夜特调</a>
+          <a href="#art-flight">三杯计划</a>
+          <a href="#details">展开细读</a>
+          <a href="#poster">保存分享</a>
+          <div>
+            <span>{cityScene?.cn ?? result.city.title}</span>
+            <strong>{cityScene?.detail ?? result.city.note}</strong>
+          </div>
+        </motion.section>
+
+        <section className="observation-panel" id="details">
           <div className="observation-heading">
             <p className="kicker">Observation Engine</p>
-            <h2>从线索到身份</h2>
+            <h2>先看结论，再展开细节</h2>
           </div>
           <div className="observation-rail">
             {result.observations.map((note, index) => (
-              <article className="observation-card" key={`${note.observation}-${index}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
+              <details className="observation-card" key={`${note.observation}-${index}`} open={index === 0}>
+                <summary>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{note.observation}</strong>
+                  <ChevronDown size={16} />
+                </summary>
                 <dl>
-                  <dt>观察</dt><dd>{note.observation}</dd>
                   <dt>证据</dt><dd>{note.evidence}</dd>
                   <dt>推理</dt><dd>{note.inference}</dd>
                   <dt>身份</dt><dd>{note.identity}</dd>
                 </dl>
-              </article>
+              </details>
             ))}
           </div>
         </section>
@@ -444,7 +481,7 @@ function Portrait() {
           </section>
         </div>
 
-        <section className="cocktail-panel">
+        <section className="cocktail-panel" id="drink">
           <div className="cocktail-visual">
             <Image src="/images/collections/cocktail-lineup.png" alt="七款不同风格的 MoodMix 鸡尾酒陈列" fill sizes="100vw" />
             <div className="cocktail-visual-frame" aria-hidden="true" />
@@ -490,7 +527,7 @@ function Portrait() {
           </div>
         </section>
 
-        <section className="art-flight-panel">
+        <section className="art-flight-panel" id="art-flight">
           <div className="art-flight-heading">
             <div>
               <p className="kicker">三杯名画计划</p>
@@ -534,7 +571,7 @@ function Portrait() {
           </div>
         </section>
 
-        <div className="result-actions">
+        <div className="result-actions" id="poster">
           <button className="primary-action" onClick={downloadPoster} disabled={posterBusy}><Download size={17} /> {posterBusy ? "正在绘制今夜海报" : "下载今夜海报"}</button>
           <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "分享文案已准备" : "分享今夜结果"}</button>
           <button className="icon-button" onClick={reset} title="重新开始" aria-label="重新开始"><RotateCcw size={18} /></button>
