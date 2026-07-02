@@ -606,8 +606,8 @@ function Portrait() {
             <motion.section className="result-page result-page-reasoning is-clickable" key="reasoning" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} {...continueProps("点击屏幕以继续查看人格")}>
               <div className="result-page-heading">
                 <p className="kicker">Step 01 / Reasoning</p>
-                <h1>先陪你读一读今晚的线索</h1>
-                <p>我们从城市、声音、速度和最近的状态慢慢靠近你，不急着给你一个名字。</p>
+                <h1>陪你读今晚的线索</h1>
+                <p>从城市、声音、速度和近况慢慢靠近你，不急着命名。</p>
                 <div className="screen-continue is-ready"><Sparkles size={15} /> 点击屏幕以继续</div>
               </div>
               <div className="observation-rail">
