@@ -393,7 +393,7 @@ function Coffee() {
         }}
         role={ready ? "button" : undefined}
         tabIndex={ready ? 0 : undefined}
-        aria-label={ready ? "点击屏幕以继续查看结果推理" : "正在沉淀杯底征兆"}
+        aria-label={ready ? "点击屏幕以继续查看线索解读" : "正在沉淀杯底征兆"}
       >
         <div className="coffee-object" aria-hidden="true">
           <span className="coffee-orbit orbit-one" /><span className="coffee-orbit orbit-two" />
@@ -606,8 +606,8 @@ function Portrait() {
             <motion.section className="result-page result-page-reasoning is-clickable" key="reasoning" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} {...continueProps("点击屏幕以继续查看人格")}>
               <div className="result-page-heading">
                 <p className="kicker">Step 01 / Reasoning</p>
-                <h1>先给你一段简单推理</h1>
-                <p>我们先看城市、声音、速度和最近的状态，不急着把你命名。</p>
+                <h1>先陪你读一读今晚的线索</h1>
+                <p>我们从城市、声音、速度和最近的状态慢慢靠近你，不急着给你一个名字。</p>
                 <div className="screen-continue is-ready"><Sparkles size={15} /> 点击屏幕以继续</div>
               </div>
               <div className="observation-rail">
