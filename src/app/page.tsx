@@ -69,11 +69,68 @@ const cityScenes = {
   tokyo: { label: "Tokyo", cn: "东京", detail: "霓虹雨线 · 玻璃秩序", motif: "neon" },
   reykjavik: { label: "Reykjavik", cn: "雷克雅未克", detail: "冰川留白 · 极光边界", motif: "aurora" },
 } as const;
+const answerMotifMap: Record<string, string> = {
+  vinyl: "ring",
+  rain: "rain",
+  jazz: "note",
+  waves: "wave",
+  settle: "hourglass",
+  wander: "route",
+  burn: "spark",
+  observe: "lens",
+  spark: "star",
+  company: "duo",
+  answer: "key",
+  courage: "flame",
+  person: "rose",
+  place: "door",
+  goal: "summit",
+  decision: "blade",
+  fog: "mist",
+  storm: "storm",
+  clear: "sun",
+  snow: "snow",
+  drifting: "current",
+  waiting: "clock",
+  departing: "arrow",
+  returning: "home",
+  light: "beam",
+  music: "note",
+  crowd: "constellation",
+  bar: "glass",
+};
 
 type CitySceneId = keyof typeof cityScenes;
 
 function getCityScene(cityId?: string) {
   return cityId && cityId in cityScenes ? cityScenes[cityId as CitySceneId] : null;
+}
+
+function getAnswerMotifs(answers?: Record<string, string>) {
+  return Object.entries(answers ?? {})
+    .filter(([questionId]) => questionId !== "q1")
+    .map(([questionId, answerId]) => ({ questionId, answerId, motif: answerMotifMap[answerId] ?? "mark" }));
+}
+
+function ChoiceVisuals({ cityId, answers }: { cityId?: string; answers?: Record<string, string> }) {
+  const motifs = getAnswerMotifs(answers);
+  if (!cityId && motifs.length === 0) return null;
+  return (
+    <div className="choice-visuals" aria-hidden="true">
+      {cityId && (
+        <div className="landmark-outline" data-city={cityId}>
+          <span /><i /><b />
+        </div>
+      )}
+      <div className="answer-motif-field">
+        {motifs.map((item, index) => (
+          <span className="answer-motif" data-motif={item.motif} data-order={index + 1} key={`${item.questionId}-${item.answerId}`}>
+            <i /><b />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function EditionSeal({ compact = false }: { compact?: boolean }) {
@@ -95,14 +152,16 @@ function Brand() {
   );
 }
 
-function Shell({ children, themeId, cityId }: { children: React.ReactNode; themeId: ThemeId; cityId?: string }) {
+function Shell({ children, themeId, cityId, answers }: { children: React.ReactNode; themeId: ThemeId; cityId?: string; answers?: Record<string, string> }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const cityScene = getCityScene(cityId);
+  const selectedCityId = cityId ?? answers?.q1;
+  const cityScene = getCityScene(selectedCityId);
   return (
-    <main className="app-shell" data-theme={themeId} data-city={cityId ?? "none"}>
+    <main className="app-shell" data-theme={themeId} data-city={selectedCityId ?? "none"}>
       <div className="shell-grain" aria-hidden="true" />
       <div className="shell-rule shell-rule-left" aria-hidden="true" />
       <div className="shell-rule shell-rule-right" aria-hidden="true" />
+      <ChoiceVisuals cityId={selectedCityId} answers={answers} />
       {cityScene && (
         <div className="city-scene" data-motif={cityScene.motif} aria-hidden="true">
           <span>{cityScene.label}</span>
@@ -186,7 +245,7 @@ function Quiz() {
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
-    <Shell themeId={themeId} cityId={answers.q1}>
+    <Shell themeId={themeId} cityId={answers.q1} answers={answers}>
       <section className="quiz-shell">
         <aside className="quiz-aside">
           <div className="quiz-aside-head">
@@ -225,7 +284,7 @@ function Quiz() {
 }
 
 function Coffee() {
-  const { result, reveal, enhancementStatus } = useMoodMix();
+  const { result, reveal, enhancementStatus, answers } = useMoodMix();
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const timer = window.setTimeout(() => setReady(true), 3000);
@@ -233,7 +292,7 @@ function Coffee() {
   }, []);
   if (!result) return null;
   return (
-    <Shell themeId={result.theme} cityId={result.city.id}>
+    <Shell themeId={result.theme} cityId={result.city.id} answers={answers}>
       <section className="coffee-stage">
         <div className="coffee-object" aria-hidden="true">
           <span className="coffee-orbit orbit-one" /><span className="coffee-orbit orbit-two" />
@@ -263,7 +322,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
 }
 
 function Portrait() {
-  const { result, reset } = useMoodMix();
+  const { result, reset, answers } = useMoodMix();
   const [shared, setShared] = useState(false);
   const [posterBusy, setPosterBusy] = useState(false);
   const [copiedArtPlan, setCopiedArtPlan] = useState<number | null>(null);
@@ -414,7 +473,7 @@ function Portrait() {
   };
 
   return (
-    <Shell themeId={result.theme} cityId={result.city.id}>
+    <Shell themeId={result.theme} cityId={result.city.id} answers={answers}>
       <section className="portrait-wrap" style={{ "--accent": result.archetype.color } as React.CSSProperties}>
         <div className="portrait-masthead"><span>MOODMIX 私享夜间版</span><i /><span>肖像 {String((result.seed % archetypes.length) + 1).padStart(2, "0")} / {archetypes.length}</span></div>
         <nav className="result-stepper" aria-label="结果页步骤">

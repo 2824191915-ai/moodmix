@@ -77,6 +77,64 @@ button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); o
 .city-scene[data-motif="atelier"] { font-style: italic; }
 .city-scene[data-motif="waltz"] span { letter-spacing: 1px; }
 .city-scene[data-motif="aurora"] span { filter: blur(.2px); }
+.choice-visuals { position: fixed; z-index: 0; inset: 82px 0 0; pointer-events: none; overflow: hidden; opacity: .92; }
+.landmark-outline { position: absolute; right: clamp(42px, 7vw, 110px); bottom: clamp(88px, 10vw, 160px); width: clamp(210px, 28vw, 430px); height: clamp(170px, 22vw, 330px); color: var(--accent); opacity: .34; filter: drop-shadow(0 0 28px color-mix(in srgb, var(--accent) 13%, transparent)); }
+.landmark-outline span, .landmark-outline i, .landmark-outline b, .answer-motif i, .answer-motif b { position: absolute; display: block; }
+.landmark-outline::before, .landmark-outline::after { content: ""; position: absolute; display: block; }
+.landmark-outline[data-city="paris"] span { left: 42%; bottom: 10%; width: 16%; height: 78%; border-left: 1px solid currentColor; border-right: 1px solid currentColor; transform: perspective(120px) rotateX(4deg); }
+.landmark-outline[data-city="paris"] i { left: 25%; right: 25%; bottom: 10%; height: 1px; background: currentColor; box-shadow: 0 -52px 0 color-mix(in srgb, currentColor 64%, transparent), 0 -105px 0 color-mix(in srgb, currentColor 44%, transparent); }
+.landmark-outline[data-city="paris"] b { left: 35%; bottom: 10%; width: 30%; height: 38%; border: 1px solid currentColor; border-bottom: 0; border-radius: 50% 50% 0 0; opacity: .62; }
+.landmark-outline[data-city="paris"]::before { left: 31%; bottom: 10%; width: 38%; height: 83%; border-left: 1px solid currentColor; border-right: 1px solid currentColor; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.landmark-outline[data-city="tokyo"] span { right: 18%; bottom: 10%; width: 18%; height: 78%; border-left: 1px solid currentColor; border-right: 1px solid currentColor; transform: skewX(-8deg); }
+.landmark-outline[data-city="tokyo"] i { right: 8%; bottom: 10%; width: 54%; height: 1px; background: currentColor; box-shadow: -44px -82px 0 color-mix(in srgb, currentColor 34%, transparent), -110px -32px 0 color-mix(in srgb, currentColor 26%, transparent); }
+.landmark-outline[data-city="tokyo"] b { right: 30%; bottom: 10%; width: 18%; height: 60%; border-left: 1px solid currentColor; transform: skewX(13deg); }
+.landmark-outline[data-city="tokyo"]::before { right: 14%; bottom: 75%; width: 26%; height: 1px; background: currentColor; transform: rotate(-25deg); box-shadow: -3px 24px 0 color-mix(in srgb, currentColor 62%, transparent), -6px 48px 0 color-mix(in srgb, currentColor 42%, transparent); }
+.landmark-outline[data-city="vienna"] span { left: 15%; right: 15%; bottom: 10%; height: 44%; border: 1px solid currentColor; border-bottom: 0; border-radius: 120px 120px 0 0; }
+.landmark-outline[data-city="vienna"] i { left: 18%; right: 18%; bottom: 10%; height: 1px; background: currentColor; box-shadow: 0 -74px 0 color-mix(in srgb, currentColor 42%, transparent); }
+.landmark-outline[data-city="vienna"] b { left: 46%; bottom: 54%; width: 8%; height: 34%; border-left: 1px solid currentColor; border-right: 1px solid currentColor; }
+.landmark-outline[data-city="vienna"]::before { left: 30%; bottom: 10%; width: 12%; height: 38%; border: 1px solid currentColor; border-bottom: 0; border-radius: 50% 50% 0 0; box-shadow: 72px 0 0 -1px transparent; }
+.landmark-outline[data-city="vienna"]::after { right: 30%; bottom: 10%; width: 12%; height: 38%; border: 1px solid currentColor; border-bottom: 0; border-radius: 50% 50% 0 0; }
+.landmark-outline[data-city="reykjavik"] span { left: 8%; right: 8%; bottom: 14%; height: 48%; border-bottom: 1px solid currentColor; clip-path: polygon(0 100%, 20% 42%, 34% 68%, 50% 18%, 66% 66%, 82% 36%, 100% 100%); background: linear-gradient(to top, color-mix(in srgb, currentColor 14%, transparent), transparent); }
+.landmark-outline[data-city="reykjavik"] i { left: 45%; bottom: 20%; width: 10%; height: 72%; border-left: 1px solid currentColor; border-right: 1px solid currentColor; }
+.landmark-outline[data-city="reykjavik"] b { left: 41%; bottom: 78%; width: 18%; height: 18%; border: 1px solid currentColor; border-bottom: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.answer-motif-field { position: absolute; inset: 0; }
+.answer-motif { position: absolute; width: 76px; height: 76px; color: var(--accent); opacity: .24; transform: rotate(calc(var(--motif-tilt, 0deg))); }
+.answer-motif::before, .answer-motif::after { content: ""; position: absolute; display: block; }
+.answer-motif[data-order="1"] { --motif-tilt: -10deg; left: 9%; top: 16%; }
+.answer-motif[data-order="2"] { --motif-tilt: 8deg; right: 18%; top: 24%; }
+.answer-motif[data-order="3"] { --motif-tilt: -18deg; left: 32%; bottom: 16%; }
+.answer-motif[data-order="4"] { --motif-tilt: 14deg; right: 8%; bottom: 30%; }
+.answer-motif[data-order="5"] { --motif-tilt: 4deg; left: 18%; bottom: 34%; }
+.answer-motif[data-order="6"] { --motif-tilt: -6deg; right: 37%; top: 13%; }
+.answer-motif[data-order="7"] { --motif-tilt: 20deg; right: 31%; bottom: 11%; }
+.answer-motif[data-motif="ring"] i, .answer-motif[data-motif="lens"] i, .answer-motif[data-motif="clock"] i { inset: 12%; border: 1px solid currentColor; border-radius: 50%; }
+.answer-motif[data-motif="ring"] b { inset: 34%; border: 1px solid currentColor; border-radius: 50%; opacity: .7; }
+.answer-motif[data-motif="rain"] i { left: 18%; top: 10%; width: 1px; height: 56px; background: currentColor; box-shadow: 18px 10px 0 currentColor, 36px -4px 0 currentColor; transform: rotate(18deg); }
+.answer-motif[data-motif="wave"] i, .answer-motif[data-motif="current"] i { left: 6%; right: 6%; top: 38%; height: 24px; border-top: 1px solid currentColor; border-radius: 50%; box-shadow: 0 12px 0 -1px color-mix(in srgb, currentColor 70%, transparent); }
+.answer-motif[data-motif="note"] i { left: 35%; top: 14%; width: 1px; height: 44px; background: currentColor; }
+.answer-motif[data-motif="note"] b { left: 18%; bottom: 16%; width: 28px; height: 18px; border: 1px solid currentColor; border-radius: 50%; transform: rotate(-18deg); }
+.answer-motif[data-motif="star"] i, .answer-motif[data-motif="spark"] i, .answer-motif[data-motif="snow"] i { left: 50%; top: 10%; width: 1px; height: 58px; background: currentColor; }
+.answer-motif[data-motif="star"] b, .answer-motif[data-motif="spark"] b, .answer-motif[data-motif="snow"] b { left: 50%; top: 10%; width: 1px; height: 58px; background: currentColor; transform: rotate(90deg); }
+.answer-motif[data-motif="star"]::before, .answer-motif[data-motif="spark"]::before, .answer-motif[data-motif="snow"]::before { left: 50%; top: 10%; width: 1px; height: 58px; background: currentColor; transform: rotate(45deg); }
+.answer-motif[data-motif="star"]::after, .answer-motif[data-motif="spark"]::after, .answer-motif[data-motif="snow"]::after { left: 50%; top: 10%; width: 1px; height: 58px; background: currentColor; transform: rotate(-45deg); }
+.answer-motif[data-motif="route"] i, .answer-motif[data-motif="arrow"] i { left: 12%; right: 14%; top: 44%; height: 1px; background: currentColor; }
+.answer-motif[data-motif="route"] b, .answer-motif[data-motif="arrow"] b { right: 12%; top: 34%; width: 18px; height: 18px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; transform: rotate(45deg); }
+.answer-motif[data-motif="key"] i { left: 12%; top: 31%; width: 26px; height: 26px; border: 1px solid currentColor; border-radius: 50%; }
+.answer-motif[data-motif="key"] b { left: 38%; top: 47%; width: 44px; height: 1px; background: currentColor; box-shadow: 22px 8px 0 -1px currentColor; }
+.answer-motif[data-motif="rose"] i, .answer-motif[data-motif="duo"] i { left: 23%; top: 18%; width: 25px; height: 25px; border: 1px solid currentColor; border-radius: 50%; box-shadow: 21px 14px 0 -1px transparent; }
+.answer-motif[data-motif="rose"] b { left: 48%; top: 46%; width: 1px; height: 36px; background: currentColor; transform: rotate(12deg); }
+.answer-motif[data-motif="flame"] i { left: 31%; top: 12%; width: 28px; height: 48px; border: 1px solid currentColor; border-radius: 50% 50% 55% 55%; transform: rotate(28deg); }
+.answer-motif[data-motif="mist"] i, .answer-motif[data-motif="beam"] i { left: 8%; right: 8%; top: 32%; height: 1px; background: currentColor; box-shadow: 0 16px 0 color-mix(in srgb, currentColor 72%, transparent), 0 32px 0 color-mix(in srgb, currentColor 44%, transparent); }
+.answer-motif[data-motif="glass"] i { left: 31%; top: 12%; width: 32px; height: 42px; border: 1px solid currentColor; border-top-width: 2px; clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%); }
+.answer-motif[data-motif="home"] i, .answer-motif[data-motif="door"] i { left: 18%; bottom: 16%; width: 46px; height: 38px; border: 1px solid currentColor; border-top: 0; }
+.answer-motif[data-motif="home"] b, .answer-motif[data-motif="door"] b { left: 17%; top: 18%; width: 48px; height: 48px; border-left: 1px solid currentColor; border-top: 1px solid currentColor; transform: rotate(45deg); }
+.answer-motif[data-motif="summit"] i { left: 8%; right: 8%; bottom: 18%; height: 50px; border-bottom: 1px solid currentColor; clip-path: polygon(0 100%, 30% 36%, 45% 70%, 65% 18%, 100% 100%); background: color-mix(in srgb, currentColor 12%, transparent); }
+.answer-motif[data-motif="constellation"] i { left: 18%; top: 18%; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 30px 10px 0 currentColor, 14px 39px 0 currentColor, 48px 45px 0 currentColor; }
+.answer-motif[data-motif="constellation"] b { left: 21%; top: 25%; width: 54px; height: 38px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; transform: skewY(20deg); opacity: .5; }
+.answer-motif[data-motif="sun"] i { inset: 25%; border: 1px solid currentColor; border-radius: 50%; }
+.answer-motif[data-motif="storm"] i { left: 16%; top: 20%; width: 46px; height: 26px; border: 1px solid currentColor; border-bottom: 0; border-radius: 50% 50% 0 0; }
+.answer-motif[data-motif="storm"] b { left: 42%; top: 46%; width: 18px; height: 30px; border-left: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: skewX(-22deg); }
+.answer-motif[data-motif="blade"] i { left: 50%; top: 10%; width: 1px; height: 62px; background: currentColor; transform: rotate(32deg); }
 
 .topbar {
   position: relative;
@@ -315,6 +373,8 @@ button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); o
   .topbar-meta span { display: none; }
   .city-scene { right: 22px; bottom: 90px; opacity: .7; }
   .city-scene span { font-size: clamp(54px, 16vw, 100px); }
+  .landmark-outline { right: 18px; bottom: 86px; width: 260px; height: 200px; opacity: .24; }
+  .answer-motif { width: 58px; height: 58px; opacity: .18; }
   .welcome-edition { display: none; }
   .welcome { grid-template-columns: 1fr; align-items: end; }
   .welcome-rail { width: min(680px, 100%); grid-template-columns: 120px 1fr; align-items: start; padding: 22px 0 0; border-left: 0; border-top: 1px solid var(--line-strong); }
@@ -332,6 +392,14 @@ button:focus-visible, select:focus-visible { outline: 1px solid var(--accent); o
   .shell-rule { display: none; }
   .city-scene { right: 18px; bottom: 28px; opacity: .38; }
   .city-scene small, .city-scene i { display: none; }
+  .choice-visuals { inset: 68px 0 0; opacity: .72; }
+  .landmark-outline { right: -28px; bottom: 22px; width: 210px; height: 160px; opacity: .18; }
+  .answer-motif { width: 48px; height: 48px; opacity: .14; }
+  .answer-motif[data-order="1"] { left: 4%; top: 18%; }
+  .answer-motif[data-order="2"] { right: 6%; top: 28%; }
+  .answer-motif[data-order="3"] { left: 10%; bottom: 22%; }
+  .answer-motif[data-order="4"] { right: 8%; bottom: 18%; }
+  .answer-motif[data-order="5"], .answer-motif[data-order="6"], .answer-motif[data-order="7"] { display: none; }
   .topbar { height: 68px; grid-template-columns: 1fr auto; padding: 0 20px; }.topbar-meta { display: none; }.brand-word { font-size: 19px; }.brand-word small { display: none; }.brand-mark { width: 30px; }
   .welcome { min-height: calc(100svh - 68px); align-items: end; gap: 24px; padding: 38px 24px 38px; }.welcome-image { background-position: 62% center; }.welcome-shade { background: linear-gradient(0deg, rgba(5,7,9,.99) 0%, rgba(5,7,9,.88) 56%, rgba(5,7,9,.3) 100%); }.welcome-shade::after { inset: 10px; }.welcome-prelude { gap: 12px; flex-wrap: nowrap; }.welcome-prelude > span { padding-left: 12px; font-size: 7px; letter-spacing: 1.5px; }.welcome h1 { font-size: clamp(56px, 18vw, 76px); line-height: .88; }.welcome-signature { margin-top: 17px; font-size: 11px; }.welcome-signature i { width: 32px; }.welcome-copy { font-size: 16px; margin: 18px 0 20px; line-height: 1.72; }.welcome-proof { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 22px; }.welcome-proof span { min-height: 58px; padding: 9px 8px; font-size: 6px; letter-spacing: 1.1px; }.welcome-proof b { font-size: 24px; }.welcome-actions { display: grid; width: 100%; }.primary-action { width: 100%; }.welcome-rail { display: none; }.welcome-foot { display: none; }
   .quiz-shell { display: block; min-height: calc(100svh - 68px); }.quiz-aside { height: 96px; padding: 15px 20px; display: grid; grid-template-columns: 1fr auto; align-items: center; border-right: 0; border-bottom: 1px solid var(--line); }.quiz-aside::after { inset: 7px; }.quiz-aside-head { align-items: center; }.quiz-aside-head .edition-seal { display: none; }.quiz-aside strong { margin: 0; grid-row: span 2; font-size: 54px; }.quiz-aside > small { display: none; }.progress-scale { align-self: end; gap: 4px; margin-bottom: 7px; }.progress-scale i { height: 7px; }.quiz-aside .progress-track { align-self: end; }.question-panel { padding: 44px 20px 50px; }.question-panel::before { display: none; }.question-panel h2 { margin-bottom: 29px; font-size: 36px; }.option-grid { grid-template-columns: 1fr; }.option, .option:nth-child(even) { min-height: 92px; grid-template-columns: 32px 1fr 12px 18px; padding: 15px 12px; border-right: 0; }.option:hover { padding-left: 17px; }.option-copy strong { font-size: 17px; }.option-arrow { opacity: .55; transform: none; }
