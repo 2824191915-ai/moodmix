@@ -112,6 +112,29 @@ function getAnswerMotifs(answers?: Record<string, string>) {
     .map(([questionId, answerId]) => ({ questionId, answerId, motif: answerMotifMap[answerId] ?? "mark" }));
 }
 
+function getContrastPalette(hex: string) {
+  const normalized = hex.replace("#", "");
+  const value = normalized.length === 3
+    ? normalized.split("").map((char) => char + char).join("")
+    : normalized;
+  const channel = (start: number) => Number.parseInt(value.slice(start, start + 2), 16) / 255;
+  const [r, g, b] = [channel(0), channel(2), channel(4)].map((item) => (
+    item <= 0.03928 ? item / 12.92 : ((item + 0.055) / 1.055) ** 2.4
+  ));
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const isLight = luminance > 0.48;
+
+  return {
+    ink: isLight ? "#11100f" : "#fff7ec",
+    muted: isLight ? "rgba(17, 16, 15, .66)" : "rgba(255, 247, 236, .74)",
+    line: isLight ? "rgba(17, 16, 15, .18)" : "rgba(255, 247, 236, .22)",
+  };
+}
+
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof Element && Boolean(target.closest("button, a, input, select, textarea, label, summary, details"));
+}
+
 function LandmarkOutline({ cityId }: { cityId: string }) {
   if (cityId === "paris") {
     return (
@@ -356,9 +379,22 @@ function Coffee() {
     return () => window.clearTimeout(timer);
   }, []);
   if (!result) return null;
+  const handleReveal = (event?: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
+    if (!ready || isInteractiveTarget(event?.target ?? null)) return;
+    reveal();
+  };
   return (
     <Shell themeId={result.theme} cityId={result.city.id} answers={answers}>
-      <section className="coffee-stage">
+      <section
+        className={`coffee-stage ${ready ? "is-clickable" : ""}`}
+        onClick={handleReveal}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") handleReveal(event);
+        }}
+        role={ready ? "button" : undefined}
+        tabIndex={ready ? 0 : undefined}
+        aria-label={ready ? "点击屏幕以继续查看结果推理" : "正在沉淀杯底征兆"}
+      >
         <div className="coffee-object" aria-hidden="true">
           <span className="coffee-orbit orbit-one" /><span className="coffee-orbit orbit-two" />
           <div className={`coffee-cup ${ready ? "is-ready" : ""}`}>
@@ -373,9 +409,7 @@ function Coffee() {
           <h2>{ready ? "杯底已经安静下来" : "让未说出口的部分慢慢沉淀"}</h2>
           <p>{ready ? "三个象征正在等待被看见。" : "咖啡渣会在旋转之后留下今晚的线索。"}</p>
           <div className="coffee-status"><i className={enhancementStatus === "loading" ? "is-pulsing" : ""} />{enhancementStatus === "loading" ? "正在读取你的情绪风味" : "今夜肖像已经显影"}</div>
-          <button className="primary-action" onClick={reveal} disabled={!ready}>
-            <Sparkles size={17} /> 揭晓杯底征兆
-          </button>
+          <div className={`screen-continue ${ready ? "is-ready" : ""}`}><Sparkles size={15} /> {ready ? "点击屏幕以继续" : "请稍候"}</div>
         </div>
       </section>
     </Shell>
@@ -407,6 +441,20 @@ function Portrait() {
   }, [resultStep]);
   if (!result) return null;
   const recipeSpec = getProfessionalSpec(result.cocktail.basedOn);
+  const personaPalette = getContrastPalette(result.archetype.color);
+  const continueToNext = (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
+    if (isInteractiveTarget(event.target)) return;
+    goNext();
+  };
+  const continueProps = (label: string) => ({
+    onClick: continueToNext,
+    onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+      if (event.key === "Enter" || event.key === " ") continueToNext(event);
+    },
+    role: "button",
+    tabIndex: 0,
+    "aria-label": label,
+  });
   const goNext = () => setResultStep((step) => Math.min(resultSteps.length - 1, step + 1));
   const goBack = () => setResultStep((step) => Math.max(0, step - 1));
 
@@ -555,11 +603,12 @@ function Portrait() {
 
         <AnimatePresence mode="wait">
           {resultStep === 0 && (
-            <motion.section className="result-page result-page-reasoning" key="reasoning" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+            <motion.section className="result-page result-page-reasoning is-clickable" key="reasoning" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} {...continueProps("点击屏幕以继续查看人格")}>
               <div className="result-page-heading">
                 <p className="kicker">Step 01 / Reasoning</p>
                 <h1>先给你一段简单推理</h1>
                 <p>我们先看城市、声音、速度和最近的状态，不急着把你命名。</p>
+                <div className="screen-continue is-ready"><Sparkles size={15} /> 点击屏幕以继续</div>
               </div>
               <div className="observation-rail">
                 {result.observations.map((note, index) => (
@@ -576,15 +625,20 @@ function Portrait() {
                   </details>
                 ))}
               </div>
-              <div className="result-page-actions">
-                <button className="primary-action" onClick={goNext}>下一步，看人格 <ArrowRight size={17} /></button>
-              </div>
             </motion.section>
           )}
 
           {resultStep === 1 && (
-            <motion.section className="result-page" key="persona" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
-              <div className="portrait-hero is-result-page">
+            <motion.section className="result-page result-page-persona is-clickable" key="persona" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} {...continueProps("点击屏幕以继续查看鸡尾酒")}>
+              <div
+                className="portrait-hero is-result-page is-persona-color"
+                style={{
+                  "--persona-bg": result.archetype.color,
+                  "--persona-ink": personaPalette.ink,
+                  "--persona-muted": personaPalette.muted,
+                  "--persona-line": personaPalette.line,
+                } as React.CSSProperties}
+              >
                 <div className="portrait-number">{String((result.seed % archetypes.length) + 1).padStart(2, "0")}</div>
                 <p className="kicker">Step 02 / Persona</p>
                 <h1>{result.archetype.cn}</h1>
@@ -593,9 +647,10 @@ function Portrait() {
                 <span className="portrait-signature">把今夜，调成一杯酒。</span>
                 <div className="portrait-meta">
                   <span><small>今夜氛围</small>{themeLabels[theme.name] ?? theme.name}</span>
-                  <span><small>人格色彩</small><i style={{ background: result.archetype.color }} />{result.archetype.colorName}</span>
+                  <span><small>人格色彩</small>{result.archetype.colorName}</span>
                   <span><small>城市线索</small>{result.city.title}</span>
                 </div>
+                <div className="screen-continue is-ready"><Sparkles size={15} /> 点击屏幕以继续</div>
               </div>
               <div className="portrait-grid">
                 <section className="symbols-panel">
@@ -624,10 +679,6 @@ function Portrait() {
                 <p>{result.message}</p>
                 <span>{result.music}</span>
               </section>
-              <div className="result-page-actions">
-                <button className="secondary-action" onClick={goBack}><ArrowLeft size={17} /> 上一步</button>
-                <button className="primary-action" onClick={goNext}>下一步，看鸡尾酒 <ArrowRight size={17} /></button>
-              </div>
             </motion.section>
           )}
 
