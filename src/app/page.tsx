@@ -267,8 +267,10 @@ function Portrait() {
   const [shared, setShared] = useState(false);
   const [posterBusy, setPosterBusy] = useState(false);
   const [copiedArtPlan, setCopiedArtPlan] = useState<number | null>(null);
+  const [resultStep, setResultStep] = useState(0);
   const theme = result ? themes[result.theme] : themes.golden;
   const cityScene = getCityScene(result?.city.id);
+  const resultSteps = ["推理", "人格", "鸡尾酒", "名画"] as const;
   const symbolIcons = useMemo(() => result?.coffeeSymbols.map((symbol) => iconMap[symbol[0] as keyof typeof iconMap] ?? Star), [result]);
   const artFlight = useMemo(() => result ? buildArtFlightPlan(result.cocktail.basedOn, themeLabels[theme.name] ?? theme.name, result.seed, {
     archetypeId: result.archetype.id,
@@ -276,8 +278,13 @@ function Portrait() {
     scores: result.scores,
     themeId: result.theme,
   }) : [], [result, theme.name]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [resultStep]);
   if (!result) return null;
   const recipeSpec = getProfessionalSpec(result.cocktail.basedOn);
+  const goNext = () => setResultStep((step) => Math.min(resultSteps.length - 1, step + 1));
+  const goBack = () => setResultStep((step) => Math.max(0, step - 1));
 
   const downloadPoster = async () => {
     setPosterBusy(true);
@@ -410,172 +417,200 @@ function Portrait() {
     <Shell themeId={result.theme} cityId={result.city.id}>
       <section className="portrait-wrap" style={{ "--accent": result.archetype.color } as React.CSSProperties}>
         <div className="portrait-masthead"><span>MOODMIX 私享夜间版</span><i /><span>肖像 {String((result.seed % archetypes.length) + 1).padStart(2, "0")} / {archetypes.length}</span></div>
-        <motion.div className="portrait-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <div className="portrait-number">{String((result.seed % archetypes.length) + 1).padStart(2, "0")}</div>
-          <p className="kicker">你的今夜人格肖像</p>
-          <h1>{result.archetype.cn}</h1>
-          <h2>{themeLabels[theme.name] ?? theme.name}</h2>
-          <p className="archetype-note">{result.archetype.note}</p>
-          <span className="portrait-signature">把今夜，调成一杯酒。</span>
-          <div className="portrait-meta">
-            <span><small>今夜氛围</small>{themeLabels[theme.name] ?? theme.name}</span>
-            <span><small>人格色彩</small><i style={{ background: result.archetype.color }} />{result.archetype.colorName}</span>
-            <span><small>酒体浓度</small>{strengthZh(result.cocktail.strength)}</span>
-          </div>
-        </motion.div>
-
-        <motion.section className="result-overview" initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.55 }}>
-          <a href="#drink">今夜特调</a>
-          <a href="#art-flight">三杯计划</a>
-          <a href="#details">展开细读</a>
-          <a href="#poster">保存分享</a>
+        <nav className="result-stepper" aria-label="结果页步骤">
+          {resultSteps.map((label, index) => (
+            <button key={label} className={index === resultStep ? "is-active" : ""} onClick={() => setResultStep(index)}>
+              <span>{String(index + 1).padStart(2, "0")}</span>{label}
+            </button>
+          ))}
           <div>
             <span>{cityScene?.cn ?? result.city.title}</span>
             <strong>{cityScene?.detail ?? result.city.note}</strong>
           </div>
-        </motion.section>
+        </nav>
 
-        <section className="observation-panel" id="details">
-          <div className="observation-heading">
-            <p className="kicker">Observation Engine</p>
-            <h2>先看结论，再展开细节</h2>
-          </div>
-          <div className="observation-rail">
-            {result.observations.map((note, index) => (
-              <details className="observation-card" key={`${note.observation}-${index}`} open={index === 0}>
-                <summary>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{note.observation}</strong>
-                  <ChevronDown size={16} />
-                </summary>
-                <dl>
-                  <dt>证据</dt><dd>{note.evidence}</dd>
-                  <dt>推理</dt><dd>{note.inference}</dd>
-                  <dt>身份</dt><dd>{note.identity}</dd>
-                </dl>
-              </details>
-            ))}
-          </div>
-        </section>
+        <AnimatePresence mode="wait">
+          {resultStep === 0 && (
+            <motion.section className="result-page result-page-reasoning" key="reasoning" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+              <div className="result-page-heading">
+                <p className="kicker">Step 01 / Reasoning</p>
+                <h1>先给你一段简单推理</h1>
+                <p>我们先看城市、声音、速度和最近的状态，不急着把你命名。</p>
+              </div>
+              <div className="observation-rail">
+                {result.observations.map((note, index) => (
+                  <details className="observation-card" key={`${note.observation}-${index}`} open={index === 0}>
+                    <summary>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{note.observation}</strong>
+                      <ChevronDown size={16} />
+                    </summary>
+                    <dl>
+                      <dt>证据</dt><dd>{note.evidence}</dd>
+                      <dt>推理</dt><dd>{note.inference}</dd>
+                    </dl>
+                  </details>
+                ))}
+              </div>
+              <div className="result-page-actions">
+                <button className="primary-action" onClick={goNext}>下一步，看人格 <ArrowRight size={17} /></button>
+              </div>
+            </motion.section>
+          )}
 
-        <div className="portrait-grid">
-          <section className="symbols-panel">
-            <p className="kicker">杯底留下的三枚征兆</p>
-            <div className="symbol-row">
-              {result.coffeeSymbols.map((symbol, index) => {
-                const SymbolIcon = symbolIcons?.[index] ?? Star;
-                return <div className="symbol" key={`${symbol[0]}-${index}`}><SymbolIcon /><strong>{symbol[1]}</strong><span>{symbol[2]}</span></div>;
-              })}
-            </div>
-            <p className="reading">{result.reading}</p>
-          </section>
-
-          <section className="scores-panel">
-            <p className="kicker">你的内在天气</p>
-            <ScoreBar label="情绪深度" value={result.scores.emotionDepth} />
-            <ScoreBar label="社交欲" value={result.scores.socialDesire} />
-            <ScoreBar label="探索欲" value={result.scores.exploration} />
-            <ScoreBar label="浪漫" value={result.scores.romance} />
-            <ScoreBar label="控制感" value={result.scores.control} />
-            <ScoreBar label="压力" value={result.scores.pressure} />
-          </section>
-        </div>
-
-        <section className="cocktail-panel" id="drink">
-          <div className="cocktail-visual">
-            <Image src="/images/collections/cocktail-lineup.png" alt="七款不同风格的 MoodMix 鸡尾酒陈列" fill sizes="100vw" />
-            <div className="cocktail-visual-frame" aria-hidden="true" />
-            <span className="cocktail-visual-index">MM<br />04</span>
-            <div className="cocktail-visual-caption"><span>今夜酒款陈列</span><i />七种风味方向</div>
-          </div>
-          <div className="cocktail-editorial">
-            <div className="cocktail-title">
-              <p className="kicker">你的今夜特调</p>
-              <h2>{result.cocktail.name}</h2>
-              <span>以 {cocktailNameZh(result.cocktail.basedOn)} 为经典骨架</span>
-            </div>
-            <blockquote>{result.cocktail.story}</blockquote>
-            <div className="recipe-grid">
-              <div><small>单杯配方</small><p>{recipeSpec.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</p><p>{result.cocktail.modification}</p></div>
-              <div><small>制作方式</small><p>{recipeSpec.steps.join("")}</p><p>装饰：{barTextZh(recipeSpec.garnish)}</p><p>{result.cocktail.bartenderNote}</p></div>
-            </div>
-          </div>
-        </section>
-
-        <BartenderStudio
-          classic={result.cocktail.basedOn}
-          cocktailName={result.cocktail.name}
-          mood={themeLabels[theme.name] ?? theme.name}
-          portrait={result.archetype.name}
-          story={result.cocktail.story}
-        />
-
-        <CocktailLibrary />
-
-        <section className="message-panel">
-          <span className="message-ornament"><i /><Music2 size={20} /><i /></span>
-          <p>{result.message}</p>
-          <span>{result.music}</span>
-        </section>
-
-        <section className="experiences">
-          <p className="kicker">为你搭配的微醺体验</p>
-          <div className="experience-grid">
-            <article><span>01</span><h3>独处者的夜间仪式</h3><p>专属鸡尾酒 · 咖啡占卜卡 · 音乐推荐</p></article>
-            <article><span>02</span><h3>双人灵魂密谈</h3><p>双人测试 · 味觉契合度 · 共享鸡尾酒</p><small>即将开启</small></article>
-            <article><span>03</span><h3>艺术家的三杯旅程</h3><p>三种情绪阶段 · 三杯风味递进</p></article>
-          </div>
-        </section>
-
-        <section className="art-flight-panel" id="art-flight">
-          <div className="art-flight-heading">
-            <div>
-              <p className="kicker">三杯名画计划</p>
-              <h2>把今晚，挂进一间流动美术馆</h2>
-            </div>
-            <p>三杯从开场、中段到收尾递进，名画会依据你的人格类型、人格色与内在分数匹配，不再只是装饰背景。</p>
-          </div>
-          <div className="art-flight-grid">
-            {artFlight.map((drink, index) => (
-              <article
-                className="art-flight-card"
-                key={`${drink.name}-${drink.artwork.id}`}
-                style={{ "--art-bg": `url("${drink.artwork.imageUrl}")` } as React.CSSProperties}
-              >
-                <div className="art-flight-copy">
-                  <span>第 {String(index + 1).padStart(2, "0")} 杯 · {drink.act} · {strengthZh(drink.strength)}</span>
-                  <h3>{drink.name}</h3>
-                  <p>{drink.concept}</p>
-                  <dl>
-                    <dt>配方</dt>
-                    <dd>{drink.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</dd>
-                    <dt>制作</dt>
-                    <dd>{drink.steps.map(barTextZh).join("")}</dd>
-                    <dt>出杯</dt>
-                    <dd>{barTextZh(drink.glassware)} · {barTextZh(drink.ice)} · {barTextZh(drink.garnish)}</dd>
-                  </dl>
-                  <div className="art-context">
-                    <span><Palette size={13} /> {drink.artwork.period}</span>
-                    <strong>{drink.artwork.title}</strong>
-                    <small>{drink.artwork.artist} · {drink.artwork.originalTitle}</small>
-                    <p>{drink.matchNote}</p>
-                    <p>{drink.artwork.note}</p>
-                    <a href={drink.artwork.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={12} /> 查看名画来源</a>
-                  </div>
-                  <button className="art-action" onClick={() => copyArtDrink(index, drink.serviceScript)}>
-                    <Copy size={14} /> {copiedArtPlan === index ? "已复制做法" : drink.actionLabel}
-                  </button>
+          {resultStep === 1 && (
+            <motion.section className="result-page" key="persona" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+              <div className="portrait-hero is-result-page">
+                <div className="portrait-number">{String((result.seed % archetypes.length) + 1).padStart(2, "0")}</div>
+                <p className="kicker">Step 02 / Persona</p>
+                <h1>{result.archetype.cn}</h1>
+                <h2>{themeLabels[theme.name] ?? theme.name}</h2>
+                <p className="archetype-note">{result.archetype.note}</p>
+                <span className="portrait-signature">把今夜，调成一杯酒。</span>
+                <div className="portrait-meta">
+                  <span><small>今夜氛围</small>{themeLabels[theme.name] ?? theme.name}</span>
+                  <span><small>人格色彩</small><i style={{ background: result.archetype.color }} />{result.archetype.colorName}</span>
+                  <span><small>城市线索</small>{result.city.title}</span>
                 </div>
-              </article>
-            ))}
-          </div>
-        </section>
+              </div>
+              <div className="portrait-grid">
+                <section className="symbols-panel">
+                  <p className="kicker">杯底留下的三枚征兆</p>
+                  <div className="symbol-row">
+                    {result.coffeeSymbols.map((symbol, index) => {
+                      const SymbolIcon = symbolIcons?.[index] ?? Star;
+                      return <div className="symbol" key={`${symbol[0]}-${index}`}><SymbolIcon /><strong>{symbol[1]}</strong><span>{symbol[2]}</span></div>;
+                    })}
+                  </div>
+                  <p className="reading">{result.reading}</p>
+                </section>
 
-        <div className="result-actions" id="poster">
-          <button className="primary-action" onClick={downloadPoster} disabled={posterBusy}><Download size={17} /> {posterBusy ? "正在绘制今夜海报" : "下载今夜海报"}</button>
-          <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "分享文案已准备" : "分享今夜结果"}</button>
-          <button className="icon-button" onClick={reset} title="重新开始" aria-label="重新开始"><RotateCcw size={18} /></button>
-        </div>
+                <section className="scores-panel">
+                  <p className="kicker">你的内在天气</p>
+                  <ScoreBar label="情绪深度" value={result.scores.emotionDepth} />
+                  <ScoreBar label="社交欲" value={result.scores.socialDesire} />
+                  <ScoreBar label="探索欲" value={result.scores.exploration} />
+                  <ScoreBar label="浪漫" value={result.scores.romance} />
+                  <ScoreBar label="控制感" value={result.scores.control} />
+                  <ScoreBar label="压力" value={result.scores.pressure} />
+                </section>
+              </div>
+              <section className="message-panel is-compact">
+                <span className="message-ornament"><i /><Music2 size={20} /><i /></span>
+                <p>{result.message}</p>
+                <span>{result.music}</span>
+              </section>
+              <div className="result-page-actions">
+                <button className="secondary-action" onClick={goBack}><ArrowLeft size={17} /> 上一步</button>
+                <button className="primary-action" onClick={goNext}>下一步，看鸡尾酒 <ArrowRight size={17} /></button>
+              </div>
+            </motion.section>
+          )}
+
+          {resultStep === 2 && (
+            <motion.section className="result-page" key="cocktail" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+              <section className="cocktail-panel" id="drink">
+                <div className="cocktail-visual">
+                  <Image src="/images/collections/cocktail-lineup.png" alt="七款不同风格的 MoodMix 鸡尾酒陈列" fill sizes="100vw" />
+                  <div className="cocktail-visual-frame" aria-hidden="true" />
+                  <span className="cocktail-visual-index">MM<br />04</span>
+                  <div className="cocktail-visual-caption"><span>今夜酒款陈列</span><i />七种风味方向</div>
+                </div>
+                <div className="cocktail-editorial">
+                  <div className="cocktail-title">
+                    <p className="kicker">Step 03 / Cocktail</p>
+                    <h2>{result.cocktail.name}</h2>
+                    <span>以 {cocktailNameZh(result.cocktail.basedOn)} 为经典骨架</span>
+                  </div>
+                  <blockquote>{result.cocktail.story}</blockquote>
+                  <div className="recipe-grid">
+                    <div><small>单杯配方</small><p>{recipeSpec.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</p><p>{result.cocktail.modification}</p></div>
+                    <div><small>制作方式</small><p>{recipeSpec.steps.join("")}</p><p>装饰：{barTextZh(recipeSpec.garnish)}</p><p>{result.cocktail.bartenderNote}</p></div>
+                  </div>
+                </div>
+              </section>
+              <details className="extra-result-drawer">
+                <summary>展开调酒师工作台与酒库 <ChevronDown size={16} /></summary>
+                <BartenderStudio
+                  classic={result.cocktail.basedOn}
+                  cocktailName={result.cocktail.name}
+                  mood={themeLabels[theme.name] ?? theme.name}
+                  portrait={result.archetype.name}
+                  story={result.cocktail.story}
+                />
+                <CocktailLibrary />
+              </details>
+              <div className="result-page-actions">
+                <button className="secondary-action" onClick={goBack}><ArrowLeft size={17} /> 上一步</button>
+                <button className="primary-action" onClick={goNext}>最后，看名画三杯 <ArrowRight size={17} /></button>
+              </div>
+            </motion.section>
+          )}
+
+          {resultStep === 3 && (
+            <motion.section className="result-page" key="art" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+              <section className="art-flight-panel" id="art-flight">
+                <div className="art-flight-heading">
+                  <div>
+                    <p className="kicker">Step 04 / Art Flight</p>
+                    <h2>最最后，是你的三杯名画系列</h2>
+                  </div>
+                  <p>三杯从开场、中段到收尾递进，名画会依据你的人格类型、人格色与内在分数匹配，不再只是装饰背景。</p>
+                </div>
+                <div className="art-flight-grid">
+                  {artFlight.map((drink, index) => (
+                    <article
+                      className="art-flight-card"
+                      key={`${drink.name}-${drink.artwork.id}`}
+                      style={{ "--art-bg": `url("${drink.artwork.imageUrl}")` } as React.CSSProperties}
+                    >
+                      <div className="art-flight-copy">
+                        <span>第 {String(index + 1).padStart(2, "0")} 杯 · {drink.act} · {strengthZh(drink.strength)}</span>
+                        <h3>{drink.name}</h3>
+                        <p>{drink.concept}</p>
+                        <dl>
+                          <dt>配方</dt>
+                          <dd>{drink.ingredients.map((item) => `${item.amount} ${barTextZh(item.item)}`).join(" · ")}</dd>
+                          <dt>制作</dt>
+                          <dd>{drink.steps.map(barTextZh).join("")}</dd>
+                          <dt>出杯</dt>
+                          <dd>{barTextZh(drink.glassware)} · {barTextZh(drink.ice)} · {barTextZh(drink.garnish)}</dd>
+                        </dl>
+                        <div className="art-context">
+                          <span><Palette size={13} /> {drink.artwork.period}</span>
+                          <strong>{drink.artwork.title}</strong>
+                          <small>{drink.artwork.artist} · {drink.artwork.originalTitle}</small>
+                          <p>{drink.matchNote}</p>
+                          <p>{drink.artwork.note}</p>
+                          <a href={drink.artwork.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={12} /> 查看名画来源</a>
+                        </div>
+                        <button className="art-action" onClick={() => copyArtDrink(index, drink.serviceScript)}>
+                          <Copy size={14} /> {copiedArtPlan === index ? "已复制做法" : drink.actionLabel}
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+              <section className="experiences">
+                <p className="kicker">为你搭配的微醺体验</p>
+                <div className="experience-grid">
+                  <article><span>01</span><h3>独处者的夜间仪式</h3><p>专属鸡尾酒 · 咖啡占卜卡 · 音乐推荐</p></article>
+                  <article><span>02</span><h3>双人灵魂密谈</h3><p>双人测试 · 味觉契合度 · 共享鸡尾酒</p><small>即将开启</small></article>
+                  <article><span>03</span><h3>艺术家的三杯旅程</h3><p>三种情绪阶段 · 三杯风味递进</p></article>
+                </div>
+              </section>
+              <div className="result-actions" id="poster">
+                <button className="primary-action" onClick={downloadPoster} disabled={posterBusy}><Download size={17} /> {posterBusy ? "正在绘制今夜海报" : "下载今夜海报"}</button>
+                <button className="secondary-action" onClick={shareResult}><Share2 size={17} /> {shared ? "分享文案已准备" : "分享今夜结果"}</button>
+                <button className="icon-button" onClick={reset} title="重新开始" aria-label="重新开始"><RotateCcw size={18} /></button>
+              </div>
+              <div className="result-page-actions">
+                <button className="secondary-action" onClick={goBack}><ArrowLeft size={17} /> 上一步</button>
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
       </section>
     </Shell>
   );
