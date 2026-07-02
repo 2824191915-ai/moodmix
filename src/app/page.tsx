@@ -198,14 +198,14 @@ function Welcome() {
         <div className="welcome-image" aria-hidden="true" />
         <div className="welcome-shade" aria-hidden="true" />
         <motion.div className="welcome-content" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
-          <div className="welcome-prelude"><p className="kicker">Mood Reading · Cocktail Ritual</p><span>第 004 号夜间仪式</span></div>
+          <div className="welcome-prelude"><p className="kicker">Mood Reading · Cocktail Ritual</p><span>Night 004</span></div>
           <h1>MoodMix</h1>
-          <div className="welcome-signature"><span>一幅可饮用的情绪肖像</span><i /> <span>仅为今晚调制</span></div>
-          <p className="welcome-copy">八个瞬间，读出你的夜间人格、专属人格色，以及一杯真正可被调出的酒。</p>
+          <div className="welcome-signature"><span>一幅可饮用的情绪肖像</span><i /> <span>今晚限定</span></div>
+          <p className="welcome-copy">八个瞬间，读出你的夜间人格、人格色与专属鸡尾酒。</p>
           <div className="welcome-proof" aria-label="MoodMix 核心系统">
             <span><b>32</b>人格色谱</span>
-            <span><b>08</b>夜间提问</span>
             <span><b>03</b>名画酒单</span>
+            <span><b>01</b>今夜肖像</span>
           </div>
           <div className="welcome-actions">
             <button className="primary-action" onClick={start}>
@@ -223,9 +223,9 @@ function Welcome() {
         <aside className="welcome-rail" aria-label="今夜系统">
           <span>THE NIGHT INDEX</span>
           <dl>
-            <div><dt>人格</dt><dd>像星座一样被看见，但保留一点未说透的暗面。</dd></div>
-            <div><dt>色彩</dt><dd>每一种人格对应一种高级低饱和色。</dd></div>
-            <div><dt>酒单</dt><dd>名画、风味和测试结果彼此关联。</dd></div>
+            <div><dt>Persona</dt><dd>像星座一样被看见。</dd></div>
+            <div><dt>Color</dt><dd>低饱和人格色。</dd></div>
+            <div><dt>Art</dt><dd>三杯名画计划。</dd></div>
           </dl>
         </aside>
         <div className="welcome-edition"><EditionSeal /><span>萃取<br />今夜</span></div>
