@@ -21,7 +21,6 @@ type InputErrorReason =
   | "empty"
   | "too_short"
   | "unsafe"
-  | "off_topic"
   | "invalid_request";
 
 export type MoodAgentInputError = {
@@ -51,9 +50,6 @@ const resultLimits: Record<keyof MoodAgentResult, number> = {
 const promptInjectionPattern =
   /(ignore|bypass|override|system prompt|developer message|api key|token|password|泄露|忽略.*指令|系统提示|开发者消息|越狱|绕过)/i;
 
-const moodmixTopicPattern =
-  /(心情|情绪|城市|审美|风格|酒|鸡尾酒|微醺|口味|酸|甜|苦|清爽|浓烈|mood|city|style|cocktail|drink|bar|alcohol|flavor)/i;
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -80,14 +76,11 @@ export function parseMoodAgentInput(value: unknown): MoodAgentInput | MoodAgentI
   if (!combined) {
     return { reason: "empty", message: "先给我一点今晚的线索：心情、城市、审美或想喝的方向都可以。" };
   }
-  if (combined.length < 8) {
-    return { reason: "too_short", message: "线索有点太少了。再写一句心情或口味，我会更好地为你调配。" };
+  if (combined.length < 2) {
+    return { reason: "too_short", message: "再给我一两个字的线索就好，心情、颜色、地点都可以。" };
   }
   if (promptInjectionPattern.test(combined)) {
     return { reason: "unsafe", message: "这段内容像是在请求系统信息或绕过规则。我们只聊心情、城市和酒款本身。" };
-  }
-  if (!moodmixTopicPattern.test(combined)) {
-    return { reason: "off_topic", message: "这次输入和 MoodMix 的心情、城市、审美或鸡尾酒推荐关系不太大，换一个今晚的线索吧。" };
   }
 
   return input;
@@ -119,4 +112,60 @@ export function moodAgentPrompt(input: MoodAgentInput) {
     alcoholPreference: input.alcoholPreference,
     userText: input.userText,
   });
+}
+
+function pickFirstFilled(...values: string[]) {
+  return values.find((value) => value.trim())?.trim() ?? "";
+}
+
+function includesAny(value: string, words: string[]) {
+  const lower = value.toLowerCase();
+  return words.some((word) => lower.includes(word.toLowerCase()));
+}
+
+export function fallbackMoodAgentResult(input: MoodAgentInput): MoodAgentResult {
+  const combined = [input.mood, input.city, input.style, input.alcoholPreference, input.userText]
+    .filter(Boolean)
+    .join(" ");
+  const noAlcohol = includesAny(combined, ["无酒精", "不喝酒", "不饮酒", "mocktail", "no alcohol"]);
+  const lowAlcohol = noAlcohol || includesAny(combined, ["低酒精", "轻", "清爽", "low", "淡"]);
+  const cityStyle = pickFirstFilled(input.city, input.style, "今晚的私人城市");
+  const emotion = pickFirstFilled(input.mood, input.userText, "未命名心情").slice(0, 18);
+
+  if (noAlcohol) {
+    return {
+      emotion,
+      city_style: cityStyle,
+      cocktail_name: "白桃月光苏打",
+      flavor_profile: "白桃、柠檬、冷泡乌龙与细密气泡，清爽但有层次。",
+      visual_style: "高球杯、透明大冰、淡金色气泡和一片轻薄柠檬皮。",
+      recommendation_reason: "无酒精结构能保留仪式感，果香负责柔和入口，茶感让结尾更干净。",
+      bartender_note: "用冷藏高球杯出杯，最后补气泡水并轻提一次。",
+      risk_note: "这杯不含酒精；若改成含酒精版本，也建议保持低度慢饮。",
+    };
+  }
+
+  if (lowAlcohol) {
+    return {
+      emotion,
+      city_style: cityStyle,
+      cocktail_name: "薄暮柚香 Spritz",
+      flavor_profile: "葡萄柚、青柠、少量苦味利口酒与干型气泡，轻盈微苦。",
+      visual_style: "淡玫瑰金酒体、长冰柱、柚皮卷和细小气泡。",
+      recommendation_reason: "低酒精气泡能接住松弛心情，柑橘香气提亮氛围，微苦收尾避免甜腻。",
+      bartender_note: "先入柑橘与苦味基底，加满冰后补干型气泡。",
+      risk_note: "建议慢饮并配水；不想饮酒时可改为柚子苏打加无酒精苦味糖浆。",
+    };
+  }
+
+  return {
+    emotion,
+    city_style: cityStyle,
+    cocktail_name: "夜航内格罗尼",
+    flavor_profile: "金酒草本、甜味美思、橙皮苦韵与一点可可般的暗香。",
+    visual_style: "低球杯、大冰块、深红琥珀色酒体和明亮橙皮油。",
+    recommendation_reason: "经典强度适合需要一点确定感的夜晚，苦甜结构稳，香气足够有画面。",
+    bartender_note: "等量搅拌至冰冷顺滑，出杯后充分表达橙皮油。",
+    risk_note: "这杯酒感明确，请慢饮并避免空腹；需要轻一点可改成低度 Americano。",
+  };
 }

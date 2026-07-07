@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import {
+  fallbackMoodAgentResult,
   moodAgentPrompt,
   parseMoodAgentInput,
   parseMoodAgentResult,
@@ -89,11 +90,12 @@ export async function POST(request: Request) {
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json(
       {
-        generated: false,
+        generated: true,
+        fallback: true,
         reason: "not_configured",
-        message: "MoodMix AI Agent 还没有配置服务端 API Key。请在部署环境中设置 OPENAI_API_KEY。",
+        result: fallbackMoodAgentResult(input),
       },
-      { status: 503 },
+      { status: 200 },
     );
   }
 
@@ -131,8 +133,13 @@ export async function POST(request: Request) {
     const parsed = parseMoodAgentResult(JSON.parse(response.output_text));
     if (!parsed) {
       return NextResponse.json(
-        { generated: false, reason: "invalid_output", message: "这次推荐没有稳定生成，请再试一次。" },
-        { status: 502 },
+        {
+          generated: true,
+          fallback: true,
+          reason: "invalid_output",
+          result: fallbackMoodAgentResult(input),
+        },
+        { status: 200 },
       );
     }
 
@@ -144,8 +151,13 @@ export async function POST(request: Request) {
         : undefined;
     console.error("MoodMix agent generation failed", { requestId });
     return NextResponse.json(
-      { generated: false, reason: "upstream_unavailable", message: "今晚的 AI 调酒师暂时失联，请稍后重试。" },
-      { status: 502 },
+      {
+        generated: true,
+        fallback: true,
+        reason: "upstream_unavailable",
+        result: fallbackMoodAgentResult(input),
+      },
+      { status: 200 },
     );
   }
 }
