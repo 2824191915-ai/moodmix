@@ -281,6 +281,7 @@ function Shell({ children, themeId, cityId, answers }: { children: React.ReactNo
 
 function Welcome() {
   const { start, mbti, setMbti } = useMoodMix();
+  const openAgent = () => document.getElementById("mood-agent")?.scrollIntoView({ behavior: "smooth", block: "start" });
   return (
     <Shell themeId="golden">
       <section className="welcome">
@@ -300,6 +301,9 @@ function Welcome() {
             <button className="primary-action" onClick={start}>
               开启今夜配方 <ArrowRight size={17} />
             </button>
+            <button className="secondary-action" onClick={openAgent}>
+              AI 调酒师 <Sparkles size={17} />
+            </button>
             <label className="mbti-select">
               <span>MBTI · 选填</span>
               <select value={mbti} onChange={(event) => setMbti(event.target.value)} aria-label="可选 MBTI 类型">
@@ -308,7 +312,6 @@ function Welcome() {
               </select>
             </label>
           </div>
-          <MoodAgent />
         </motion.div>
         <aside className="welcome-rail" aria-label="今夜系统">
           <span>THE NIGHT INDEX</span>
@@ -322,6 +325,9 @@ function Welcome() {
         <div className="welcome-foot">
           <span>PERSONA / COLOR / COCKTAIL</span><span>MOODMIX 04</span><span className="welcome-foot-line" /><span>把今夜，调成一杯酒</span>
         </div>
+      </section>
+      <section className="agent-section" id="mood-agent">
+        <MoodAgent />
       </section>
     </Shell>
   );
