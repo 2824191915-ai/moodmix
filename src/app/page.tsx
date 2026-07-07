@@ -33,6 +33,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import BartenderStudio from "@/components/BartenderStudio";
 import CocktailLibrary from "@/components/CocktailLibrary";
+import MoodAgent from "@/components/MoodAgent";
 import { buildArtFlightPlan } from "@/lib/art-flight";
 import { barTextZh, cocktailNameZh, moodColorLabels, strengthZh, themeLabels } from "@/lib/bar-localization";
 import { archetypes, chooseTheme, questions, themes, type ThemeId } from "@/lib/moodmix";
@@ -307,6 +308,7 @@ function Welcome() {
               </select>
             </label>
           </div>
+          <MoodAgent />
         </motion.div>
         <aside className="welcome-rail" aria-label="今夜系统">
           <span>THE NIGHT INDEX</span>
